@@ -1,0 +1,11 @@
+{
+  "related-information": {},
+  "search-information": {
+    "issues": [
+      {
+        "title": "Call to undefined method MY_Loader::_ci_object_to_array()",
+        "url": "https://stackoverflow.com/questions/41557760/codeigniter-hmvc-object-to-array-error"
+      }
+    ],
+  }
+}
