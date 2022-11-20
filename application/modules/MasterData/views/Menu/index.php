@@ -1,7 +1,7 @@
 <section class="section">
   <div class="card">
     <div class="card-header">
-      <button type="button" class="btn btn-success btn-sm text-nowrap" data-bs-toggle="modal" data-bs-target="#addData" id="addData-show">
+      <button type="button" class="btn btn-success btn-sm text-nowrap" data-bs-toggle="modal" data-bs-target="#addData" onclick="return formModalReset()">
         <i class="bi bi-plus-square"></i>
         <span class="d-none d-lg-inline">Add</span>
       </button>

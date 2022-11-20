@@ -1,6 +1,3 @@
-document.addEventListener("DOMContentLoaded", function() { 
-}, false);
-
 const defaultUrl = base_url('masterData/menu/menuList');
 menuList(defaultUrl);
 
@@ -54,9 +51,8 @@ function menuList(url)
       });
 
       menuList.innerHTML = template;
-      initDataTables('menuList');
-      
-      return true;
+            
+      return initDataTables('menuList');
     }
 
     if (callback.status == false && callback.message !== undefined)
@@ -74,7 +70,7 @@ function menuList(url)
     }
     
     Toastify({
-      text: 'Terjadi Kesalahan Internal (000a).',
+      text: 'Terjadi Kesalahan Internal (SM88MQ).',
       duration: 5000,
       close: true,
       style: {
@@ -82,15 +78,16 @@ function menuList(url)
       }
     }).showToast();
   })
-    .catch(() => {
+    .catch((error) => {
       Toastify({
-        text: 'Terjadi Kesalahan Internal (000b).',
+        text: 'Terjadi Kesalahan Internal (2CBS3J).',
         duration: 5000,
         close: true,
         style: {
           background: startup.colors.danger,
         }
       }).showToast();
+      console.log(error);
     });
 }
 
@@ -98,20 +95,21 @@ function addData()
 {
   const { form, url, method, formData } = setupForm('form-addData', 'formData');
   
+  formData.append(startup.crlf_name, startup.crlf_token);
+
   let response = fetch(url, {
     method: method,
     body: formData
-  }).then((response) => response.text());
+  }).then((response) => response.json());
   
   response.then((callback) => {
-    callback = JSON.parse(callback);
+    let data = callback.data;
+
+    startup.crlf_token = data.csrf_renewed;
 
     if (callback.status == true && callback.message !== undefined)
     {
       toggleModal('addData', 'hide');
-
-      let data = callback.data;
-      document.querySelector(`[name="${startup.crlf_name}"]`).value = data.csrf_renewed;  
 
       Toastify({
         text: stripHtml(callback.message),
@@ -122,7 +120,19 @@ function addData()
         }
       }).showToast();
 
-      return true;
+      return refreshList();
+    }
+
+    if (callback.status == false && data.errors !== undefined)
+    {      
+      Object.entries(data.errors).forEach(([key, value]) => {
+        let invalidFeedback = document.querySelector(`.invalid-feedback.${key}`);
+        
+        invalidFeedback.innerHTML     = stripHtml(value);
+        invalidFeedback.style.display = 'inline-block';
+      });
+
+      return false;
     }
 
     if (callback.status == false && callback.message !== undefined)
@@ -140,7 +150,7 @@ function addData()
     }
     
     Toastify({
-      text: 'Terjadi Kesalahan Internal (000a).',
+      text: 'Terjadi Kesalahan Internal (P9KQDL).',
       duration: 5000,
       close: true,
       style: {
@@ -148,20 +158,22 @@ function addData()
       }
     }).showToast();
   })
-    .catch(() => {
+    .catch((error) => {
       Toastify({
-        text: 'Terjadi Kesalahan Internal (000b).',
+        text: 'Terjadi Kesalahan Internal (JH1P29).',
         duration: 5000,
         close: true,
         style: {
           background: startup.colors.danger,
         }
       }).showToast();
+
+      return console.log(error);
     });
 }
 
 function toggleModal(selector, type = 'show')
-{
+{  
   if (type == 'hide') {
     return document.querySelector(`#${selector}-close`).click();
   }

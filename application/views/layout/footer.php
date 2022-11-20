@@ -30,7 +30,6 @@
       <!-- Need: Apexcharts -->
       <!-- <script src="<?= base_url('assets/mazer/assets/extensions/apexcharts/apexcharts.min.js'); ?>"></script>
       <script src="<?= base_url('assets/mazer/assets/js/pages/dashboard.js'); ?>"></script> -->
-      <script src="<?= base_url('assets/js/utils.js'); ?>"></script>
 
       <?php if (isset($script)) : ?>
         <?php foreach ($script as $key => $value) : ?>

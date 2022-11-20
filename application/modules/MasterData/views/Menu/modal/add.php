@@ -3,17 +3,14 @@
     <div class="modal-content">
       <div class="modal-header">
         <h1 class="modal-title fs-5" id="addDataLabel">Add Data</h1>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" data-bs-target="#addData"  aria-label="Close"></button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" data-bs-target="#addData" aria-label="Close" onclick="return formModalReset()"></button>
       </div>
       <div class="modal-body">
-        <form action="<?= base_url('masterData/menu/addData'); ?>" method="post" enctype="multipart/form-data" id="form-addData" class="pe-4 needs-validation" novalidate>
-
-          <input type="hidden" name="<?= $this->security->get_csrf_token_name(); ?>" value="<?= $this->security->get_csrf_hash(); ?>" />
-
+        <form action="<?= base_url('masterData/menu/addData'); ?>" method="post" enctype="multipart/form-data" id="form-addData" class="pe-4">
           <div class="mb-3 row">
             <label for="a_name" class="col-sm-2 col-form-label text-end">Name <span class="text-danger">*</span></label>
             <div class="col-sm">
-              <input type="text" class="form-control" id="a_name" name="name" placeholder="Please enter value here.." />
+              <input type="text" class="form-control autohide-invalid" id="a_name" name="name" placeholder="Please enter value here.." />
               <div class="invalid-feedback name"></div>
             </div>
           </div>
@@ -21,7 +18,7 @@
           <div class="mb-3 row">
             <label for="a_icon" class="col-sm-2 col-form-label text-end">Icon <span class="text-danger">*</span></label>
             <div class="col-sm">
-              <input type="text" class="form-control" id="a_icon" name="icon" placeholder="Please enter value here.." />
+              <input type="text" class="form-control autohide-invalid" id="a_icon" name="icon" placeholder="Please enter value here.." />
               <div class="invalid-feedback icon"></div>
             </div>
           </div>
@@ -29,7 +26,7 @@
           <div class="mb-3 row">
             <label for="a_link" class="col-sm-2 col-form-label text-end">Link <span class="text-danger">*</span></label>
             <div class="col-sm">
-              <input type="text" class="form-control" id="a_link" name="link" placeholder="Please enter value here.." />
+              <input type="text" class="form-control autohide-invalid" id="a_link" name="link" placeholder="Please enter value here.." />
               <div class="invalid-feedback link"></div>
             </div>
           </div>
@@ -52,7 +49,7 @@
         </form>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal" data-bs-target="#addData" id="addData-close">Close</button>
+        <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal" data-bs-target="#addData" id="addData-close" onclick="return formModalReset()">Close</button>
         <button type="button" class="btn btn-sm btn-primary" onclick="return addData()">Save</button>
       </div>
     </div>
