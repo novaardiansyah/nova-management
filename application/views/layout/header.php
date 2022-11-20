@@ -11,5 +11,6 @@
     <link rel="shortcut icon" href="<?= base_url('assets/images/favicon.ico') ?>" type="image/png">
     
     <link rel="stylesheet" href="<?= base_url('assets/mazer/assets/css/shared/iconly.css'); ?>">
+    <link rel="stylesheet" href="<?= base_url('assets/mazer/assets/extensions/toastify-js/src/toastify.css'); ?>">
   </head>
   <body>

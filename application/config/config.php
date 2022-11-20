@@ -27,6 +27,10 @@ $config['base_url'] = ((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == "on") ?
 $config['base_url'] .= "://" . $_SERVER['HTTP_HOST'];
 $config['base_url'] .= str_replace(basename($_SERVER['SCRIPT_NAME']), "", $_SERVER['SCRIPT_NAME']);
 
+$config['encrypt_key'] = '85aaac43-bbf3-4dd4-9361-d165415b30d6';
+$config['secret_key'] = 'cb13331d-829c-499f-8089-b301befe3e83';
+$config['authorization_key'] = '94c8f165-73ed-4940-990e-e645e2f4831b';
+$config['encoded_key'] = '649ce3fa-4ac5-4005-9830-53a2b7e0192a';
 /*
 |--------------------------------------------------------------------------
 | Index File
@@ -328,7 +332,7 @@ $config['cache_query_string'] = FALSE;
 | https://codeigniter.com/userguide3/libraries/encryption.html
 |
 */
-$config['encryption_key'] = '';
+$config['encryption_key'] = $config['encrypt_key'];
 
 /*
 |--------------------------------------------------------------------------
@@ -410,7 +414,7 @@ $config['sess_regenerate_destroy'] = FALSE;
 |       'cookie_httponly') will also affect sessions.
 |
 */
-$config['cookie_prefix']	= 'nova';
+$config['cookie_prefix']	= 'nova-management';
 $config['cookie_domain']	= '';
 $config['cookie_path']		= '/';
 $config['cookie_secure']	= FALSE;
@@ -460,8 +464,8 @@ $config['global_xss_filtering'] = FALSE;
 | 'csrf_exclude_uris' = Array of URIs which ignore CSRF checks
 */
 $config['csrf_protection'] = TRUE;
-$config['csrf_token_name'] = 'csrf_test_name';
-$config['csrf_cookie_name'] = 'csrf_cookie_name';
+$config['csrf_token_name'] = 'nova_management_token';
+$config['csrf_cookie_name'] = 'nova_management_token';
 $config['csrf_expire'] = 7200;
 $config['csrf_regenerate'] = TRUE;
 $config['csrf_exclude_uris'] = array();
