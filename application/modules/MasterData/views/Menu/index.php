@@ -1,6 +1,3 @@
-<?php 
-  $menu = $dataMenu->status ? $dataMenu->data->menu : [];
-?>
 <section class="section">
   <div class="card">
     <div class="card-header">
@@ -21,38 +18,8 @@
             <th>Action</th>
           </tr>
         </thead>
-        <tbody>
-          <?php foreach ($menu as $key => $value) : ?>
-            <tr>
-              <td><?= $key + 1; ?></td>
-              <td><?= $value->name; ?></td>
-              <td><?= $value->icon; ?></td>
-              <td><?= $value->link; ?></td>
-              <td>
-                <?php if ((int) $value->isActive == 1) : ?>
-                  <span class="badge bg-success">Active</span>
-                <?php else : ?>
-                  <span class="badge bg-danger">Non-Active</span>
-                <?php endif; ?>
-              </td>
-              <td>
-                <button type="button" class="btn btn-primary btn-sm text-nowrap">
-                  <i class="bi bi-pencil-square"></i>
-                  <span class="d-none d-xl-inline">Edit</span>
-                </button>
-
-                <button type="button" class="btn btn-info btn-sm text-nowrap">
-                  <i class="bi bi-eye"></i>
-                  <span class="d-none d-xl-inline">Detail</span>
-                </button>
-
-                <button type="button" class="btn btn-danger btn-sm text-nowrap">
-                  <i class="bi bi-x-square"></i>
-                  <span class="d-none d-xl-inline">Delete</span>
-                </button>
-              </td>
-            </tr>
-          <?php endforeach; ?>
+        <tbody class="menuList">
+          <!-- content here from ajax -->
         </tbody>
       </table>
     </div>

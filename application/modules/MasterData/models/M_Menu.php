@@ -8,16 +8,20 @@ class M_Menu extends CI_Model
     parent::__construct();
   }
 
-  public function getMenu()
+  public function getMenu($data = [])
   {
+    $csrf_renewed = trim(isset($data['csrf_renewed']) ? $data['csrf_renewed'] : '');
+
     $result = $this->db->query("SELECT a.id, a.name, a.icon, a.link, a.isActive FROM menu AS a")->result();
     
     if (empty($result)) return arrayToObject(['status' => false, 'message' => 'Data tidak ditemukan.', 'data' => ['error' => 'I2W3']]);
 
     $response = arrayToObject(['status' => true, 'message' => 'Data berhasil ditemukan.', 'data' => [
-      'menu' => []
+      'menu' => [],
+      'csrf_renewed' => ''
     ]]);
     $response->data->menu = $result;
+    $response->data->csrf_renewed = $csrf_renewed;
     
     return $response;
   }
