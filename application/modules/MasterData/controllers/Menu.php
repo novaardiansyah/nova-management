@@ -12,15 +12,19 @@ class Menu extends MX_Controller
   public function index()
   {
     $data = [
-      'title' => 'Menu',
+      'title'    => 'Menu',
       'subtitle' => 'Management Menu',
       'breadcrumb' => [
         ['title' => 'Master Data', 'link' => base_url('masterData')],
         ['title' => 'Menu', 'link' => base_url('masterData/menu')]
       ],
-      'dataMenu' => $this->menu->getMenu(),
-
+      'style' => [
+        base_url('assets/mazer/assets/extensions/simple-datatables/style.css'),
+        base_url('assets/css/main.css'),
+        base_url('assets/css/masterData/menu.css')
+      ],
       'script' => [
+        base_url('assets/mazer/assets/extensions/simple-datatables/umd/simple-datatables.js'),
         base_url('assets/js/masterData/menu.js')
       ]
     ];
@@ -39,6 +43,13 @@ class Menu extends MX_Controller
     ];
 
     $result = $this->menu->addData($send);
+    echo json_encode($result);
+  }
+
+  public function menuList()
+  {
+    $csrf_renewed = $this->security->get_csrf_hash();
+    $result = $this->menu->getMenu(['csrf_renewed' => $csrf_renewed]);
     echo json_encode($result);
   }
 
