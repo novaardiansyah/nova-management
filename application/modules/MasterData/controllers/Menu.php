@@ -34,9 +34,17 @@ class Menu extends MX_Controller
   }
 
   public function addData()
-  {
+  { 
+    $csrf_renewed = $this->security->get_csrf_hash();
+    $validate     = $this->_r_addData();
+
+    if ($validate->run() == false)
+    {
+      echo json_encode(['status' => false, 'message' => 'Validation is invalid.', 'data' => ['csrf_renewed' => $csrf_renewed, 'errors' => $validate->error_array()]]); exit;
+    }
+
     $send = [
-      'csrf_renewed' => $this->security->get_csrf_hash(),
+      'csrf_renewed' => $csrf_renewed,
       'name'         => trim(isset($_POST['name']) ? $_POST['name'] : ''),
       'icon'         => trim(isset($_POST['icon']) ? $_POST['icon'] : ''),
       'link'         => trim(isset($_POST['link']) ? $_POST['link'] : ''),
@@ -64,5 +72,17 @@ class Menu extends MX_Controller
 
     $result = $this->menu->getMenu();
     echo json_encode($result);
+  }
+
+  private function _r_addData()
+  {
+    $rules = [
+      ['field' => 'name', 'label' => 'Name', 'rules' => 'required|trim|max_length[120]'],
+      ['field' => 'icon', 'label' => 'Icon', 'rules' => 'required|trim|max_length[120]'],
+      ['field' => 'link', 'label' => 'Link', 'rules' => 'required|trim|max_length[120]'],
+      ['field' => 'isActive', 'label' => 'Status', 'rules' => 'required|trim|numeric|max_length[1]']
+    ];
+
+    return $this->form_validation->set_rules($rules);
   }
 }
