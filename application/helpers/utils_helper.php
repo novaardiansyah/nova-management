@@ -1,12 +1,32 @@
 <?php 
 defined('BASEPATH') OR exit('No direct script access allowed');
 
+function getTimes($data = 'now', $format = 'Y-m-d H:i:s')
+{
+  date_default_timezone_set('Asia/Jakarta');
+  return date($format, strtotime($data));
+}
+
+function format_date($data, $format = 'Y-m-d H:i:s')
+{
+  date_default_timezone_set('Asia/Jakarta');
+
+  if (strpos($data, '/') !== false) {
+    $data = str_replace('/', '-', $data);
+  }
+
+  return date_format(date_create($data), $format);
+}
+
+
 function getKey($typeKey = 'encoded_key')
 {
-  $encoded_key = '649ce3fa-4ac5-4005-9830-53a2b7e0192a';
-  $secret_key = 'cb13331d-829c-499f-8089-b301befe3e83';
-  $encrypt_key = '85aaac43-bbf3-4dd4-9361-d165415b30d6';
-  $authorization_key = '94c8f165-73ed-4940-990e-e645e2f4831b';
+  $ci = get_instance();
+
+  $encoded_key = $ci->config->item('encoded_key');
+  $secret_key = $ci->config->item('secret_key');
+  $encrypt_key = $ci->config->item('encrypt_key');
+  $authorization_key = $ci->config->item('authorization_key');
 
   switch ($typeKey) {
     case 'encoded_key':

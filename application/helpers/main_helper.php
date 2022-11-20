@@ -16,6 +16,7 @@ function backend_layout($content, $data = [])
 
   $ci->load->view('layout/header', $data);
   $ci->load->view('layout/sidebar');
+  $ci->load->view('layout/breadcrumb');
   $ci->load->view($content);
   $ci->load->view('layout/footer');
   
