@@ -22,6 +22,11 @@
           <!-- content here from ajax -->
         </tbody>
       </table>
+
+      <div class="d-flex justify-content-center align-items-center" id="loader-table">
+        <img src="<?= base_url('assets/mazer/assets/images/svg-loaders/audio.svg'); ?>" alt="loader" class="img-fluid me-2" style="max-width: 200px;" />  
+        <img src="<?= base_url('assets/mazer/assets/images/svg-loaders/audio.svg'); ?>" alt="loader" class="img-fluid" style="max-width: 200px;" />         
+      </div>
     </div>
   </div>
 </section>

@@ -25,6 +25,7 @@ class Menu extends MX_Controller
       ],
       'script' => [
         base_url('assets/mazer/assets/extensions/simple-datatables/umd/simple-datatables.js'),
+        base_url('assets/js/main.js'),
         base_url('assets/js/masterData/menu.js')
       ]
     ];
