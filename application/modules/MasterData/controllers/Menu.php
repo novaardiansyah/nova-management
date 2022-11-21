@@ -33,6 +33,13 @@ class Menu extends MX_Controller
     backend_layout('menu/index', $data);
   }
 
+  public function menuList()
+  {
+    $csrf_renewed = $this->security->get_csrf_hash();
+    $result = $this->menu->getMenu(['csrf_renewed' => $csrf_renewed]);
+    echo json_encode($result);
+  }
+
   public function addData()
   { 
     $csrf_renewed = $this->security->get_csrf_hash();
@@ -55,10 +62,28 @@ class Menu extends MX_Controller
     echo json_encode($result);
   }
 
-  public function menuList()
+  private function _r_addData()
+  {
+    $rules = [
+      ['field' => 'name', 'label' => 'Name', 'rules' => 'required|trim|max_length[120]'],
+      ['field' => 'icon', 'label' => 'Icon', 'rules' => 'required|trim|max_length[120]'],
+      ['field' => 'link', 'label' => 'Link', 'rules' => 'required|trim|max_length[120]'],
+      ['field' => 'isActive', 'label' => 'Status', 'rules' => 'required|trim|numeric|max_length[1]']
+    ];
+
+    return $this->form_validation->set_rules($rules);
+  }
+
+  public function deleteData()
   {
     $csrf_renewed = $this->security->get_csrf_hash();
-    $result = $this->menu->getMenu(['csrf_renewed' => $csrf_renewed]);
+
+    $send = [
+      'csrf_renewed' => $csrf_renewed,
+      '_id'          => trim(isset($_POST['_id']) ? $_POST['_id'] : ''),
+    ];
+
+    $result = $this->menu->deleteData($send);
     echo json_encode($result);
   }
 
@@ -72,17 +97,5 @@ class Menu extends MX_Controller
 
     $result = $this->menu->getMenu();
     echo json_encode($result);
-  }
-
-  private function _r_addData()
-  {
-    $rules = [
-      ['field' => 'name', 'label' => 'Name', 'rules' => 'required|trim|max_length[120]'],
-      ['field' => 'icon', 'label' => 'Icon', 'rules' => 'required|trim|max_length[120]'],
-      ['field' => 'link', 'label' => 'Link', 'rules' => 'required|trim|max_length[120]'],
-      ['field' => 'isActive', 'label' => 'Status', 'rules' => 'required|trim|numeric|max_length[1]']
-    ];
-
-    return $this->form_validation->set_rules($rules);
   }
 }
