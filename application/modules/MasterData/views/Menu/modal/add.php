@@ -17,7 +17,8 @@
 
           <div class="mb-3 row">
             <label for="a_icon" class="col-sm-2 col-form-label text-end">Icon <span class="text-danger">*</span></label>
-            <div class="col-sm">
+            <div class="col-sm input-group">
+              <span class="input-group-text">bi bi-</span>
               <input type="text" class="form-control autohide-invalid" id="a_icon" name="icon" placeholder="Please enter value here.." />
               <div class="invalid-feedback icon"></div>
             </div>
@@ -25,7 +26,8 @@
 
           <div class="mb-3 row">
             <label for="a_link" class="col-sm-2 col-form-label text-end">Link <span class="text-danger">*</span></label>
-            <div class="col-sm">
+            <div class="col-sm input-group">
+              <span class="input-group-text">/</span>
               <input type="text" class="form-control autohide-invalid" id="a_link" name="link" placeholder="Please enter value here.." />
               <div class="invalid-feedback link"></div>
             </div>

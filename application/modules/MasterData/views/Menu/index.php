@@ -1,7 +1,7 @@
 <section class="section">
   <div class="card">
     <div class="card-header">
-      <button type="button" class="btn btn-success btn-sm text-nowrap" data-bs-toggle="modal" data-bs-target="#addData" onclick="return formModalReset()">
+      <button type="button" class="btn btn-success btn-sm text-nowrap" data-bs-toggle="modal" data-bs-target="#addData" onclick="return formModalReset()" id="addData-show">
         <i class="bi bi-plus-square"></i>
         <span class="d-none d-lg-inline">Add</span>
       </button>
@@ -32,3 +32,4 @@
 </section>
 
 <?php $this->load->view('masterData/menu/modal/add'); ?>
+<?php $this->load->view('masterData/menu/modal/edit'); ?>

@@ -34,12 +34,12 @@ function menuList(url = defaultUrl)
               <span class="badge ${parseInt(value.isActive) == 1 ? 'bg-success' : 'bg-danger'}">${parseInt(value.isActive) == 1 ? 'Active' : 'Non-Active'}</span>
             </td>
             <td>
-              <button type="button" class="btn btn-primary btn-sm text-nowrap">
+              <button type="button" class="btn btn-primary btn-sm text-nowrap" data-bs-toggle="modal" data-bs-target="#editData" id="editData-show" onclick="return editData('${value.id}')">
                 <i class="bi bi-pencil-square"></i>
                 <span class="d-none d-xl-inline">Edit</span>
               </button>
 
-              <button type="button" class="btn btn-info btn-sm text-nowrap">
+              <button type="button" class="btn btn-info btn-sm text-nowrap d-none">
                 <i class="bi bi-eye"></i>
                 <span class="d-none d-xl-inline">Detail</span>
               </button>
@@ -280,6 +280,80 @@ function deleteData(_id)
           });
       }
     })
+}
+
+function editData(_id)
+{
+  formModalReset();
+  loaderModalForm('editData', 'load');
+
+  const formData = new FormData();
+  formData.append(startup.crlf_name, startup.crlf_token);
+  formData.append('_id', _id);
+
+  let url = base_url('masterData/menu/editData');
+
+  let response = fetch(url, {
+    method: 'POST',
+    body: formData
+  }).then((response) => response.json());
+  
+  response.then((callback) => {
+    let data = callback.data;
+
+    startup.crlf_token = data.csrf_renewed;
+
+    if (callback.status == true && callback.message !== undefined)
+    {
+      console.log(data);
+      loaderModalForm('editData', 'unload');
+    }
+
+    if (callback.status == false && callback.message !== undefined)
+    {
+      Toastify({
+        text: stripHtml(callback.message),
+        duration: 5000,
+        close: true,
+        style: {
+          background: startup.colors.danger,
+        }
+      }).showToast();
+
+      return refreshList();
+    }
+  })
+    .catch((error) => {
+      Toastify({
+        text: 'Terjadi Kesalahan Internal (JVXNN).',
+        duration: 5000,
+        close: true,
+        style: {
+          background: startup.colors.danger,
+        }
+      }).showToast();
+      console.log(error);
+
+      return refreshList();
+    });
+}
+
+function loaderModalForm(idForm, type = 'load')
+{
+  const loaderForm = document.querySelector(`.loader.form-${idForm}`);
+  const form       = document.querySelector(`#form-${idForm}`);
+
+  if (type == 'unload')
+  {
+    loaderForm.style.display = 'none';
+    loaderForm.classList.remove('d-flex');
+
+    form.style.display = 'block';
+    return true;
+  }
+
+  loaderForm.classList.add('d-flex');
+  form.style.display = 'none';
 }
 
 function toggleModal(selector, type = 'show')
