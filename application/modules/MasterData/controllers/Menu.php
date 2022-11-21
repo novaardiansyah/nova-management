@@ -53,8 +53,8 @@ class Menu extends MX_Controller
     $send = [
       'csrf_renewed' => $csrf_renewed,
       'name'         => trim(isset($_POST['name']) ? $_POST['name'] : ''),
-      'icon'         => trim(isset($_POST['icon']) ? $_POST['icon'] : ''),
-      'link'         => trim(isset($_POST['link']) ? $_POST['link'] : ''),
+      'icon'         => trim(isset($_POST['icon']) ? 'bi bi-' . $_POST['icon'] : ''),
+      'link'         => trim(isset($_POST['link']) ? '/' . $_POST['link'] : ''),
       'isActive'     => trim(isset($_POST['isActive']) ? $_POST['isActive'] : '')
     ];
 
@@ -84,6 +84,19 @@ class Menu extends MX_Controller
     ];
 
     $result = $this->menu->deleteData($send);
+    echo json_encode($result);
+  }
+
+  public function editData()
+  {
+    $csrf_renewed = $this->security->get_csrf_hash();
+
+    $send = [
+      'csrf_renewed' => $csrf_renewed,
+      '_id'          => trim(isset($_POST['_id']) ? $_POST['_id'] : ''),
+    ];
+
+    $result = $this->menu->editData($send);
     echo json_encode($result);
   }
 

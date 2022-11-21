@@ -10,7 +10,7 @@ class M_Main extends CI_Model
 
   public function getMenu()
   {
-    $result = $this->db->query("SELECT a.id, a.name, a.icon, a.link, a.isActive FROM menu AS a WHERE a.isActive = 1")->result();
+    $result = $this->db->query("SELECT a.id, a.name, a.icon, a.link, a.isActive FROM menu AS a WHERE a.isActive = 1 AND a.isDeleted = 0")->result();
 
     if (empty($result)) return arrayToObject(['status' => false, 'message' => 'Data tidak ditemukan.', 'data' => ['error' => 'I2W3']]);
 

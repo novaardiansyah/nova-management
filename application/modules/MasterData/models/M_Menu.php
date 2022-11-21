@@ -78,4 +78,20 @@ class M_Menu extends CI_Model
 
     return ['status' => true, 'message' => 'Berhasil menghapus data.', 'data' => $result];
   }
+
+  public function editData($data = [])
+  {
+    $csrf_renewed = trim(isset($data['csrf_renewed']) ? $data['csrf_renewed'] : '');
+    $_id = trim(isset($data['_id']) ? $data['_id'] : '');
+    $id  = $_id ? custom_decode($_id) : '';
+
+    $result = $this->db->query("SELECT a.id, a.name, a.icon, a.link, a.isActive FROM menu AS a WHERE a.id = '$id' AND a.isDeleted = 0")->row();
+    
+    if (empty($result)) return ['status' => false, 'message' => 'Data tidak ditemukan.', 'data' => ['error' => '7YP7W']];
+
+    $result->id = custom_encode($result->id);    
+    $result->csrf_renewed = $csrf_renewed;
+
+    return ['status' => true, 'message' => 'Berhasil menghapus data.', 'data' => $result];
+  }
 }
