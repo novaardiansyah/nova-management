@@ -6,7 +6,7 @@
         <span class="d-none d-lg-inline">Add</span>
       </button>
     </div>
-    <div class="card-body">
+    <div class="card-body menuList">
       <table class="table table-striped" id="menuList">
         <thead>
           <tr>

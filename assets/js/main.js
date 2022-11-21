@@ -50,7 +50,8 @@ function initDataTables(idTable)
   adaptPageDropdown(dataTable);
   adaptPagination(dataTable);
 
-  loaderTable.style.visibility = 'hidden';
+  loaderTable.style.display = 'none';
+  loaderTable.classList.remove('d-flex');
 }
 
 function denied_specialchar(string) {
@@ -81,7 +82,16 @@ function stripHtml(html) {
   return tmp.textContent || tmp.innerText || "";
 }
 
-function ReloadPage() {
+function ReloadPage(params = {}) {
+  if (params.after !== undefined) 
+  {
+    setTimeout(() => {
+      location.reload();
+    }, params.after);
+
+    return true;  
+  }
+  
   location.reload();
 }
 
@@ -115,4 +125,49 @@ function formModalReset()
   [...invalidFeedback].forEach((element) => {
     element.style.display = 'none';
   });
+}
+
+const sweetAlertConfirmDanger = Swal.mixin({
+  customClass: {
+    confirmButton: 'btn btn-sm btn-danger ms-2',
+    cancelButton: 'btn btn-sm btn-secondary'
+  },
+  buttonsStyling: false
+});
+
+function customSweetalert(text, icon, timer, timerProgressBar, willClose, type = 'normal') {
+  if (type == 'loading') {
+    Swal.fire({
+      text: text,
+      icon: icon,
+      showConfirmButton: false,
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+      allowEnterKey: false,
+      onBeforeOpen: () => {
+        Swal.showLoading();
+      }
+    });
+
+    return true;
+  }
+
+  if (timerProgressBar == true)
+  {
+    Swal.fire({
+      text: stripHtml(text),
+      icon: icon,
+      showConfirmButton: false,
+      timer: timer,
+      timerProgressBar: timerProgressBar,
+      willClose: willClose
+    });
+  } else {
+    Swal.fire({
+      text: stripHtml(text),
+      icon: icon,
+      showConfirmButton: false,
+      willClose: willClose
+    });
+  }
 }

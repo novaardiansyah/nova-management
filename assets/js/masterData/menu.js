@@ -1,7 +1,10 @@
-const defaultUrl = base_url('masterData/menu/menuList');
-menuList(defaultUrl);
+const defaultUrl      = base_url('masterData/menu/menuList');
+const wrapperMenuList = document.querySelector('.card-body.menuList');
 
-function menuList(url)
+localStorage.setItem(defaultUrl, wrapperMenuList.innerHTML);
+menuList();
+
+function menuList(url = defaultUrl)
 {
   const formData = new FormData();
   formData.append(startup.crlf_name, startup.crlf_token);
@@ -41,7 +44,7 @@ function menuList(url)
                 <span class="d-none d-xl-inline">Detail</span>
               </button>
 
-              <button type="button" class="btn btn-danger btn-sm text-nowrap">
+              <button type="button" class="btn btn-danger btn-sm text-nowrap" onclick="return deleteData('${value.id}')">
                 <i class="bi bi-x-square"></i>
                 <span class="d-none d-xl-inline">Delete</span>
               </button>
@@ -91,6 +94,13 @@ function menuList(url)
     });
 }
 
+function refreshList(url = defaultUrl)
+{
+  let defaultTable = localStorage.getItem(defaultUrl);
+  wrapperMenuList.innerHTML = defaultTable;
+  menuList(url);
+}
+
 function addData()
 {
   const { form, url, method, formData } = setupForm('form-addData', 'formData');
@@ -113,7 +123,7 @@ function addData()
 
       Toastify({
         text: stripHtml(callback.message),
-        duration: 5000,
+        duration: 3000,
         close: true,
         style: {
           background: startup.colors.info,
@@ -146,7 +156,7 @@ function addData()
         }
       }).showToast();
 
-      return false;
+      return refreshList();
     }
     
     Toastify({
@@ -157,6 +167,8 @@ function addData()
         background: startup.colors.danger,
       }
     }).showToast();
+
+    return refreshList();
   })
     .catch((error) => {
       Toastify({
@@ -167,9 +179,107 @@ function addData()
           background: startup.colors.danger,
         }
       }).showToast();
+      console.log(error);
 
-      return console.log(error);
+      return refreshList();
     });
+}
+
+function deleteData(_id)
+{
+  sweetAlertConfirmDanger.fire({
+    text: 'Apakah anda yakin?',
+    icon: 'warning',
+    showCancelButton: true,
+    reverseButtons: true,
+    confirmButtonText: 'Lanjutkan',
+    cancelButtonText: 'Batal'
+  })
+    .then((confirm) => {
+      if (confirm.isConfirmed == true)
+      {
+        const formData = new FormData();
+        formData.append(startup.crlf_name, startup.crlf_token);
+        formData.append('_id', _id);
+
+        let url = base_url('masterData/menu/deleteData');
+
+        let response = fetch(url, {
+          method: 'POST',
+          body: formData
+        }).then((response) => response.json());
+        
+        response.then((callback) => {
+          let data = callback.data;
+
+          startup.crlf_token = data.csrf_renewed;
+
+          if (callback.status == true && callback.message !== undefined)
+          {
+            Toastify({
+              text: stripHtml(callback.message),
+              duration: 3000,
+              close: true,
+              style: {
+                background: startup.colors.info,
+              }
+            }).showToast();
+
+            return refreshList();
+          }
+
+          if (callback.status == false && data.errors !== undefined)
+          {      
+            Object.entries(data.errors).forEach(([key, value]) => {
+              let invalidFeedback = document.querySelector(`.invalid-feedback.${key}`);
+              
+              invalidFeedback.innerHTML     = stripHtml(value);
+              invalidFeedback.style.display = 'inline-block';
+            });
+
+            return false;
+          }
+
+          if (callback.status == false && callback.message !== undefined)
+          {
+            Toastify({
+              text: stripHtml(callback.message),
+              duration: 5000,
+              close: true,
+              style: {
+                background: startup.colors.danger,
+              }
+            }).showToast();
+
+            return refreshList();
+          }
+          
+          Toastify({
+            text: 'Terjadi Kesalahan Internal (0I0ZG).',
+            duration: 5000,
+            close: true,
+            style: {
+              background: startup.colors.danger,
+            }
+          }).showToast();
+
+          return refreshList();
+        })
+          .catch((error) => {
+            Toastify({
+              text: 'Terjadi Kesalahan Internal (PZJFW).',
+              duration: 5000,
+              close: true,
+              style: {
+                background: startup.colors.danger,
+              }
+            }).showToast();
+            console.log(error);
+
+            return refreshList();
+          });
+      }
+    })
 }
 
 function toggleModal(selector, type = 'show')
