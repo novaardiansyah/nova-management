@@ -1,49 +1,77 @@
 <?php 
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class M_Menu extends CI_Model 
+class M_Submenu extends CI_Model 
 {
   public function __construct()
   {
     parent::__construct();
   }
 
-  public function getMenu($data = [])
+  public function dropdownMenu($data = [])
   {
     $csrf_renewed = trim(isset($data['csrf_renewed']) ? $data['csrf_renewed'] : '');
 
-    $result = $this->db->query("SELECT a.id, a.name, a.icon, a.link, a.isActive FROM menu AS a WHERE a.isDeleted = 0 ORDER BY a.created_at DESC")->result();
+    $result = $this->db->query("SELECT a.id, a.name, a.icon, a.link, a.isActive FROM menu AS a WHERE a.isDeleted = 0 ORDER BY a.name ASC")->result();
     
-    if (empty($result)) return arrayToObject(['status' => false, 'message' => 'Data tidak ditemukan.', 'data' => ['error' => 'I2W3']]);
+    if (empty($result)) return ['status' => false, 'message' => 'Data tidak ditemukan.', 'data' => ['error' => '9D61R']];
 
     foreach ($result as $key => $value) 
     {
       $result[$key]->id = custom_encode($value->id);
     }
 
-    $response = arrayToObject(['status' => true, 'message' => 'Data berhasil ditemukan.', 'data' => [
-      'menu' => [],
-      'csrf_renewed' => ''
-    ]]);
-    $response->data->menu = $result;
-    $response->data->csrf_renewed = $csrf_renewed;
+    $response = [
+      'menu'         => $result,
+      'csrf_renewed' => $csrf_renewed
+    ];
     
-    return $response;
+    return ['status' => true, 'message' => 'Data berhasil ditemukan.', 'data' => $response];
+  }
+
+  public function getSubmenu($data = [])
+  {
+    $csrf_renewed = trim(isset($data['csrf_renewed']) ? $data['csrf_renewed'] : '');
+
+    $result = $this->db->query("SELECT a.id, a.idMenu, a.name, a.link, a.isActive, b.name AS nameMenu FROM submenu AS a 
+      INNER JOIN menu AS b ON a.idMenu = b.id
+    WHERE a.isDeleted = 0 AND b.isDeleted = 0 ORDER BY a.created_at DESC")->result();
+    
+    if (empty($result)) return ['status' => false, 'message' => 'Data tidak ditemukan.', 'data' => ['error' => 'UWR34']];
+
+    foreach ($result as $key => $value) 
+    {
+      $result[$key]->id     = custom_encode($value->id);
+      $result[$key]->idMenu = custom_encode($value->idMenu);
+    }
+
+    $response = [
+      'submenu'      => $result,
+      'csrf_renewed' => $csrf_renewed
+    ];
+    
+    return ['status' => true, 'message' => 'Data berhasil ditemukan.', 'data' => $response];
   }
 
   public function addData($data = [])
   {
     $csrf_renewed = trim(isset($data['csrf_renewed']) ? $data['csrf_renewed'] : '');
 
+    $_idMenu = trim(isset($data['_idMenu']) ? $data['_idMenu'] : '');
+    $idMenu  = $_idMenu ? custom_decode($_idMenu) : 0;
+
+    $menu = $this->db->query("SELECT a.id, a.name, a.icon, a.link, a.isActive FROM menu AS a WHERE a.id = '$idMenu' AND a.isDeleted = 0")->row();
+    if (empty($menu)) return ['status' => false, 'message' => 'Data menu tidak ditemukan.', 'data' => ['error' => 'NNB7U']];
+
     $send = [
       'name'       => trim(isset($data['name']) ? $data['name'] : ''),
-      'icon'       => trim(isset($data['icon']) ? $data['icon'] : ''),
+      'idMenu'     => $idMenu,
       'link'       => trim(isset($data['link']) ? $data['link'] : ''),
       'isActive'   => trim(isset($data['isActive']) ? $data['isActive'] : 0),
       'created_by' => 1
     ];
 
-    $this->db->insert('menu', $send);
+    $this->db->insert('submenu', $send);
     $send['csrf_renewed'] = $csrf_renewed;
 
     return ['status' => true, 'message' => 'Berhasil menambah data baru.', 'data' => $send];
@@ -55,28 +83,24 @@ class M_Menu extends CI_Model
     $_id = trim(isset($data['_id']) ? $data['_id'] : '');
     $id  = $_id ? custom_decode($_id) : '';
 
-    $result = $this->db->query("SELECT a.id, a.name, a.icon, a.link, a.isActive FROM menu AS a WHERE a.id = '$id'")->result();
-    
-    if (empty($result)) return ['status' => false, 'message' => 'Data tidak ditemukan.', 'data' => ['error' => 'L9C3O']];
+    $result = $this->db->query("SELECT a.id, a.idMenu, a.name, a.link, a.isActive FROM submenu AS a WHERE a.isDeleted = 0 AND a.id = '$id'")->row();
+    if (empty($result)) return ['status' => false, 'message' => 'Data tidak ditemukan.', 'data' => ['error' => 'UWR34']];
 
-    foreach ($result as $key => $value) 
-    {
-      $result[$key]->id = custom_encode($value->id);
-    }
+    $result = custom_encode($result->id);
 
     $send = [
-      'id'         => $id,
       'isDeleted'  => 1,
       'isActive'   => 0,
       'deleted_by' => 1,
       'deleted_at' => getTimes('now')
     ];
 
-    $this->db->update('menu', $send, ['id' => $id]);
-    
-    $result['csrf_renewed'] = $csrf_renewed;
+    $this->db->update('submenu', $send, ['id' => $id]);
 
-    return ['status' => true, 'message' => 'Berhasil menghapus data.', 'data' => $result];
+    $send['id'] = $_id;
+    $send['csrf_renewed'] = $csrf_renewed;
+
+    return ['status' => true, 'message' => 'Berhasil menghapus data.', 'data' => $send];
   }
 
   public function editData($data = [])
@@ -103,7 +127,7 @@ class M_Menu extends CI_Model
 
     $result = $this->db->query("SELECT a.id, a.name, a.icon, a.link, a.isActive FROM menu AS a WHERE a.id = '$id' AND a.isDeleted = 0")->row();
     
-    if (empty($result)) return ['status' => false, 'message' => 'Data tidak ditemukan.', 'data' => ['error' => 'GO6RM', 'csrf_renewed' => $csrf_renewed, 'query' => $this->db->last_query()]];
+    if (empty($result)) return ['status' => false, 'message' => 'Data tidak ditemukan.', 'data' => ['error' => 'GO6RM']];
 
     $send = [
       'name'       => trim(isset($data['name']) ? $data['name'] : ''),
