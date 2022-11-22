@@ -109,38 +109,45 @@ class M_Submenu extends CI_Model
     $_id = trim(isset($data['_id']) ? $data['_id'] : '');
     $id  = $_id ? custom_decode($_id) : '';
 
-    $result = $this->db->query("SELECT a.id, a.name, a.icon, a.link, a.isActive FROM menu AS a WHERE a.id = '$id' AND a.isDeleted = 0")->row();
+    $result = $this->db->query("SELECT a.id, a.idMenu, a.name, a.link, a.isActive, b.name AS nameMenu FROM submenu AS a 
+      INNER JOIN menu AS b ON a.idMenu = b.id
+    WHERE a.isDeleted = 0 AND b.isDeleted = 0 AND a.id = '$id'")->row();
     
     if (empty($result)) return ['status' => false, 'message' => 'Data tidak ditemukan.', 'data' => ['error' => '7YP7W']];
 
-    $result->id = custom_encode($result->id);    
+    $result->id           = custom_encode($result->id);
+    $result->idMenu       = custom_encode($result->idMenu);
     $result->csrf_renewed = $csrf_renewed;
 
-    return ['status' => true, 'message' => 'Berhasil menghapus data.', 'data' => $result];
+    return ['status' => true, 'message' => 'Berhasil menemukan data.', 'data' => $result];
   }
 
   public function updateData($data = [])
   {
     $csrf_renewed = trim(isset($data['csrf_renewed']) ? $data['csrf_renewed'] : '');
+    
     $_id = trim(isset($data['_id']) ? $data['_id'] : '');
     $id  = $_id ? custom_decode($_id) : '';
 
-    $result = $this->db->query("SELECT a.id, a.name, a.icon, a.link, a.isActive FROM menu AS a WHERE a.id = '$id' AND a.isDeleted = 0")->row();
-    
-    if (empty($result)) return ['status' => false, 'message' => 'Data tidak ditemukan.', 'data' => ['error' => 'GO6RM']];
+    $_idMenu = trim(isset($data['_idMenu']) ? $data['_idMenu'] : '');
+    $idMenu  = $_idMenu ? custom_decode($_idMenu) : '';
+
+    $result = $this->db->query("SELECT a.id, a.idMenu, a.name, a.link, a.isActive FROM submenu AS a WHERE a.isDeleted = 0 AND a.id = '$id'")->row();
+    if (empty($result)) return ['status' => false, 'message' => 'Data submenu tidak ditemukan.', 'data' => ['error' => 'PAA8T', 'csrf_renewed' => $csrf_renewed, 'query' => $this->db->last_query()]];
 
     $send = [
+      'idMenu'     => $idMenu,
       'name'       => trim(isset($data['name']) ? $data['name'] : ''),
-      'icon'       => trim(isset($data['icon']) ? $data['icon'] : ''),
       'link'       => trim(isset($data['link']) ? $data['link'] : ''),
       'isActive'   => trim(isset($data['isActive']) ? $data['isActive'] : 0),
       'updated_by' => 1,
       'updated_at' => getTimes('now')
     ];
 
-    $this->db->update('menu', $send, ['id' => $id]);
+    $this->db->update('submenu', $send, ['id' => $id]);
 
-    $send['id'] = custom_encode($id);
+    $send['id']           = custom_encode($id);
+    $send['idMenu']       = $_idMenu;
     $send['csrf_renewed'] = $csrf_renewed;
 
     return ['status' => true, 'message' => 'Berhasil memperbarui data.', 'data' => $send];

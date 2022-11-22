@@ -113,8 +113,8 @@ class Submenu extends MX_Controller
     $send = [
       'csrf_renewed' => $csrf_renewed,
       '_id'          => trim(isset($_POST['id']) ? $_POST['id'] : ''),
+      '_idMenu'      => trim(isset($_POST['idMenu']) ? $_POST['idMenu'] : ''),
       'name'         => trim(isset($_POST['name']) ? $_POST['name'] : ''),
-      'icon'         => trim(isset($_POST['icon']) ? 'bi bi-' . $_POST['icon'] : ''),
       'link'         => trim(isset($_POST['link']) ? '/' . $_POST['link'] : ''),
       'isActive'     => trim(isset($_POST['isActive']) ? $_POST['isActive'] : '')
     ];
@@ -126,8 +126,8 @@ class Submenu extends MX_Controller
   private function _r_updateData()
   {
     $rules = [
-      ['field' => 'name', 'label' => 'Name', 'rules' => 'required|trim|max_length[120]'],
-      ['field' => 'icon', 'label' => 'Icon', 'rules' => 'required|trim|max_length[120]'],
+      ['field' => 'idMenu', 'label' => 'Menu', 'rules' => 'required|trim|max_length[120]'],
+      ['field' => 'name', 'label' => 'Submenu', 'rules' => 'required|trim|max_length[120]'],
       ['field' => 'link', 'label' => 'Link', 'rules' => 'required|trim|max_length[120]'],
       ['field' => 'isActive', 'label' => 'Status', 'rules' => 'required|trim|numeric|max_length[1]']
     ];

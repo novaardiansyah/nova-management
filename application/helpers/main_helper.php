@@ -6,12 +6,16 @@ function backend_layout($content, $data = [])
   $ci = get_instance();
   $ci->load->model('M_Main', 'main');
 
-  $menu = $ci->main->getMenu();
+  $csrf_renewed = $ci->security->get_csrf_hash();
+
+  $menu     = $ci->main->getMenu();
+  $mainLogo = $ci->main->getMainLogo(['csrf_renewed' => $csrf_renewed]);
 
   $send = [
-    'menu' => $menu->status ? $menu->data : []
+    'menu'     => $menu->status ? $menu->data : [],
+    'mainLogo' => $mainLogo['status'] ? $mainLogo['data'] : [],
   ];
-
+  
   $data = array_merge($data, $send);
 
   $ci->load->view('layout/header', $data);

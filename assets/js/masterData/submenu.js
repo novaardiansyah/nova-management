@@ -89,11 +89,24 @@ function submenuList(url = defaultUrl)
     });
 }
 
-function refreshList(url = defaultUrl)
+function refreshList(url = defaultUrl, params = {})
 {
+  const { afterTimeout } = params;
   let defaultTable = localStorage.getItem(defaultUrl);
+
+  if (afterTimeout !== undefined) {
+    let delay = afterTimeout - (afterTimeout * 0.50);
+
+    setTimeout(() => {
+      wrapperMenuList.innerHTML = defaultTable;
+      submenuList(url);
+    }, delay);
+
+    return true;
+  }
+  
   wrapperMenuList.innerHTML = defaultTable;
-  submenuList(url);
+  return submenuList(url);
 }
 
 function addData()
@@ -268,7 +281,7 @@ function editData(_id)
   formData.append(startup.crlf_name, startup.crlf_token);
   formData.append('_id', _id);
 
-  let url = base_url('masterData/menu/editData');
+  let url = base_url('masterData/submenu/editData');
 
   let response = fetch(url, {
     method: 'POST',
@@ -284,21 +297,20 @@ function editData(_id)
     {
       Object.entries(data).forEach(([key, value]) => {
         let fieldRadio = document.querySelectorAll(`input[name="${key}"][type="radio"]`);
-        
         fieldRadio.forEach((value1) => {
           if (value1.value == value) return value1.checked = true;
           value1.checked = false;
         });
 
-        let field = document.querySelector(`#editData [name="${key}"][type="text"]`);
-        
+        let field = document.querySelector(`#editData [name="${key}"]`);
         if (field !== null)
         {
-          if (key == 'icon') value = value.replace(value.substr(0, 6), '');
           if (key == 'link') value = value.replace(value.substr(0, 1), '');
-
-          return field.value = value;
+          if (field.type !== 'radio' && field.type !== 'checkbox') return field.value = value;
         }
+
+        let fieldSelect = document.querySelector(`#editData select[name="${key}"]`);
+        if (fieldSelect !== null) return fieldSelect.value = value;
       });
 
       return loaderModalForm('editData', 'unload');
@@ -316,24 +328,9 @@ function editData(_id)
       }).showToast();
       toggleModal('editData', 'hide');
 
-      return refreshList();
+      return false;
     }
-  })
-    .catch((error) => {
-      Toastify({
-        text: 'Terjadi Kesalahan Internal (JVXNN).',
-        duration: 5000,
-        close: true,
-        style: {
-          background: startup.colors.danger,
-        }
-      }).showToast();
-
-      toggleModal('editData', 'hide');
-      console.log(error);
-
-      return refreshList();
-    });
+  });
 }
 
 function updateData()
@@ -349,7 +346,7 @@ function updateData()
   
   response.then((callback) => {
     let data = callback.data;
-
+    
     startup.crlf_token = data.csrf_renewed;
 
     if (callback.status == true && callback.message !== undefined)
@@ -362,10 +359,10 @@ function updateData()
         close: true,
         style: {
           background: startup.colors.info,
-        }
+        },
       }).showToast();
 
-      return refreshList();
+      return refreshList(defaultUrl, { afterTimeout: 3000 });
     }
 
     if (callback.status == false && data.errors !== undefined)
@@ -391,24 +388,11 @@ function updateData()
         }
       }).showToast();
 
-      return refreshList();
+      return false;
     }
     
-    return refreshList();
-  })
-    .catch((error) => {
-      Toastify({
-        text: 'Terjadi Kesalahan Internal (JH1P29).',
-        duration: 5000,
-        close: true,
-        style: {
-          background: startup.colors.danger,
-        }
-      }).showToast();
-      console.log(error);
-
-      return refreshList();
-    });
+    return false;
+  });
 }
 
 function loaderModalForm(idForm, type = 'load')

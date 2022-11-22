@@ -76,11 +76,24 @@ function menuList(url = defaultUrl)
   });
 }
 
-function refreshList(url = defaultUrl)
+function refreshList(url = defaultUrl, params = {})
 {
+  const { afterTimeout } = params;
   let defaultTable = localStorage.getItem(defaultUrl);
+
+  if (afterTimeout !== undefined) {
+    let delay = afterTimeout - (afterTimeout * 0.50);
+
+    setTimeout(() => {
+      wrapperMenuList.innerHTML = defaultTable;
+      menuList(url);
+    }, delay);
+
+    return true;
+  }
+  
   wrapperMenuList.innerHTML = defaultTable;
-  menuList(url);
+  return menuList(url);
 }
 
 function addData()
@@ -357,7 +370,7 @@ function updateData()
         }
       }).showToast();
 
-      return refreshList();
+      return refreshList(defaultUrl, { afterTimeout: 3000 });
     }
 
     if (callback.status == false && data.errors !== undefined)
