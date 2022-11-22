@@ -1,10 +1,10 @@
-const defaultUrl      = base_url('masterData/menu/menuList');
-const wrapperMenuList = document.querySelector('.card-body.menuList');
+const defaultUrl      = base_url('masterData/submenu/submenuList');
+const wrapperMenuList = document.querySelector('.card-body.submenuList');
 
 localStorage.setItem(defaultUrl, wrapperMenuList.innerHTML);
-menuList();
+submenuList();
 
-function menuList(url = defaultUrl)
+function submenuList(url = defaultUrl)
 {
   const formData = new FormData();
   formData.append(startup.crlf_name, startup.crlf_token);
@@ -20,15 +20,15 @@ function menuList(url = defaultUrl)
       let data = callback.data;
       startup.crlf_token = data.csrf_renewed;
       
-      let menuList = document.querySelector('tbody.menuList');
+      let submenuList = document.querySelector('tbody.submenuList');
       let template = '';
-
-      Object.entries(data.menu).forEach(([key, value]) => {
+      
+      Object.entries(data.submenu).forEach(([key, value]) => {
         template += `
           <tr>
             <td>${parseInt(key) + 1}</td>
             <td>${value.name}</td>
-            <td>${value.icon}</td>
+            <td>${value.nameMenu}</td>
             <td>${value.link}</td>
             <td>
               <span class="badge ${parseInt(value.isActive) == 1 ? 'bg-success' : 'bg-danger'}">${parseInt(value.isActive) == 1 ? 'Active' : 'Non-Active'}</span>
@@ -53,9 +53,9 @@ function menuList(url = defaultUrl)
         `;
       });
 
-      menuList.innerHTML = template;
+      submenuList.innerHTML = template;
             
-      return initDataTables('menuList');
+      return initDataTables('submenuList');
     }
 
     if (callback.status == false && callback.message !== undefined)
@@ -71,16 +71,29 @@ function menuList(url = defaultUrl)
 
       return false;
     }
-    
+
     return false;
-  });
+  })
+    .catch((error) => {
+      Toastify({
+        text: 'Terjadi Kesalahan Internal (2CBS3J).',
+        duration: 5000,
+        close: true,
+        style: {
+          background: startup.colors.danger,
+        }
+      }).showToast();
+      console.log(error);
+
+      return false;
+    });
 }
 
 function refreshList(url = defaultUrl)
 {
   let defaultTable = localStorage.getItem(defaultUrl);
   wrapperMenuList.innerHTML = defaultTable;
-  menuList(url);
+  submenuList(url);
 }
 
 function addData()
@@ -141,15 +154,6 @@ function addData()
       return refreshList();
     }
     
-    Toastify({
-      text: 'Terjadi Kesalahan Internal (P9KQDL).',
-      duration: 5000,
-      close: true,
-      style: {
-        background: startup.colors.danger,
-      }
-    }).showToast();
-
     return refreshList();
   })
     .catch((error) => {
@@ -184,7 +188,7 @@ function deleteData(_id)
         formData.append(startup.crlf_name, startup.crlf_token);
         formData.append('_id', _id);
 
-        let url = base_url('masterData/menu/deleteData');
+        let url = base_url('masterData/submenu/deleteData');
 
         let response = fetch(url, {
           method: 'POST',
@@ -235,21 +239,12 @@ function deleteData(_id)
 
             return refreshList();
           }
-          
-          Toastify({
-            text: 'Terjadi Kesalahan Internal (0I0ZG).',
-            duration: 5000,
-            close: true,
-            style: {
-              background: startup.colors.danger,
-            }
-          }).showToast();
 
           return refreshList();
         })
           .catch((error) => {
             Toastify({
-              text: 'Terjadi Kesalahan Internal (PZJFW).',
+              text: 'Terjadi Kesalahan Internal (N7956).',
               duration: 5000,
               close: true,
               style: {
@@ -295,14 +290,14 @@ function editData(_id)
           value1.checked = false;
         });
 
-        let field = document.querySelector(`#editData [name="${key}"]`);
+        let field = document.querySelector(`#editData [name="${key}"][type="text"]`);
         
         if (field !== null)
         {
           if (key == 'icon') value = value.replace(value.substr(0, 6), '');
           if (key == 'link') value = value.replace(value.substr(0, 1), '');
 
-          if (field.type !== 'radio' && field.type !== 'checkbox') return field.value = value;
+          return field.value = value;
         }
       });
 
@@ -321,11 +316,24 @@ function editData(_id)
       }).showToast();
       toggleModal('editData', 'hide');
 
-      return false;
+      return refreshList();
     }
+  })
+    .catch((error) => {
+      Toastify({
+        text: 'Terjadi Kesalahan Internal (JVXNN).',
+        duration: 5000,
+        close: true,
+        style: {
+          background: startup.colors.danger,
+        }
+      }).showToast();
 
-    return false;
-  });
+      toggleModal('editData', 'hide');
+      console.log(error);
+
+      return refreshList();
+    });
 }
 
 function updateData()
@@ -341,7 +349,7 @@ function updateData()
   
   response.then((callback) => {
     let data = callback.data;
-    
+
     startup.crlf_token = data.csrf_renewed;
 
     if (callback.status == true && callback.message !== undefined)
@@ -383,11 +391,24 @@ function updateData()
         }
       }).showToast();
 
-      return false;
+      return refreshList();
     }
     
-    return false;
-  });
+    return refreshList();
+  })
+    .catch((error) => {
+      Toastify({
+        text: 'Terjadi Kesalahan Internal (JH1P29).',
+        duration: 5000,
+        close: true,
+        style: {
+          background: startup.colors.danger,
+        }
+      }).showToast();
+      console.log(error);
+
+      return refreshList();
+    });
 }
 
 function loaderModalForm(idForm, type = 'load')

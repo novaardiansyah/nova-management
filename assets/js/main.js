@@ -3,7 +3,7 @@ let autohideInvalid = document.querySelectorAll('.autohide-invalid');
   element.addEventListener('click', function(e) {
     let name = e.target.getAttribute('name');
     let invalidFeedback = document.querySelector(`.invalid-feedback.${name}`);
-    invalidFeedback.style.display = 'none';
+    if (invalidFeedback !== null) invalidFeedback.style.display = 'none';
   });
 });
 
@@ -119,8 +119,19 @@ function setupForm(formId, type = 'serialize') {
   return { form, url, method, formData };
 }
 
-function formModalReset()
+function formModalReset(idForm = null)
 {
+  if (idForm !== null) {
+    const form = document.getElementById(idForm);
+
+    let invalidFeedback = document.querySelectorAll(`#${idForm} .invalid-feedback`);
+    [...invalidFeedback].forEach((element) => {
+      element.style.display = 'none';
+    });
+
+    return form.reset();
+  }
+  
   let invalidFeedback = document.querySelectorAll('.invalid-feedback');
   [...invalidFeedback].forEach((element) => {
     element.style.display = 'none';

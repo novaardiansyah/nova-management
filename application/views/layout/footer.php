@@ -28,7 +28,6 @@
       <script src="<?= base_url('assets/mazer/assets/js/app.js'); ?>"></script>
       <script src="<?= base_url('assets/mazer/assets/extensions/toastify-js/src/toastify.js'); ?>"></script>
       <script src="<?= base_url('assets/mazer/assets/extensions/sweetalert2/sweetalert2.min.js'); ?>"></script>
-      <script src="<?= base_url('assets/mazer/assets/extensions/sweetalert2/sweetalert2.min.js'); ?>"></script>
 
       <?php if (isset($script)) : ?>
         <?php foreach ($script as $key => $value) : ?>

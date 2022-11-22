@@ -1,23 +1,24 @@
 <?php 
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Menu extends MX_Controller 
+class Submenu extends MX_Controller 
 {
   public function __construct()
   {
     parent::__construct();
-    $this->load->model('M_Menu', 'menu');
+    $this->load->model('M_Submenu', 'submenu');
   }
 
   public function index()
   {
     $data = [
-      'title'    => 'Menu',
-      'subtitle' => 'Management Menu',
+      'title'    => 'Submenu',
+      'subtitle' => 'Management Submenu',
       'breadcrumb' => [
         ['title' => 'Master Data', 'link' => base_url('masterData')],
-        ['title' => 'Menu', 'link' => base_url('masterData/menu')]
+        ['title' => 'Submenu', 'link' => base_url('masterData/submenu')]
       ],
+      'menuData' => $this->submenu->dropdownMenu(),
       'style' => [
         base_url('assets/mazer/assets/extensions/simple-datatables/style.css'),
         base_url('assets/css/main.css')
@@ -25,17 +26,17 @@ class Menu extends MX_Controller
       'script' => [
         base_url('assets/mazer/assets/extensions/simple-datatables/umd/simple-datatables.js'),
         base_url('assets/js/main.js'),
-        base_url('assets/js/masterData/menu.js')
+        base_url('assets/js/masterData/submenu.js')
       ]
     ];
-
-    backend_layout('menu/index', $data);
+    // echo json_encode($data['menu']); exit;
+    backend_layout('submenu/index', $data);
   }
 
-  public function menuList()
+  public function submenuList()
   {
     $csrf_renewed = $this->security->get_csrf_hash();
-    $result = $this->menu->getMenu(['csrf_renewed' => $csrf_renewed]);
+    $result = $this->submenu->getSubmenu(['csrf_renewed' => $csrf_renewed]);
     echo json_encode($result);
   }
 
@@ -52,20 +53,20 @@ class Menu extends MX_Controller
     $send = [
       'csrf_renewed' => $csrf_renewed,
       'name'         => trim(isset($_POST['name']) ? $_POST['name'] : ''),
-      'icon'         => trim(isset($_POST['icon']) ? 'bi bi-' . $_POST['icon'] : ''),
+      '_idMenu'      => trim(isset($_POST['idMenu']) ? $_POST['idMenu'] : ''),
       'link'         => trim(isset($_POST['link']) ? '/' . $_POST['link'] : ''),
       'isActive'     => trim(isset($_POST['isActive']) ? $_POST['isActive'] : '')
     ];
 
-    $result = $this->menu->addData($send);
+    $result = $this->submenu->addData($send);
     echo json_encode($result);
   }
 
   private function _r_addData()
   {
     $rules = [
-      ['field' => 'name', 'label' => 'Name', 'rules' => 'required|trim|max_length[120]'],
-      ['field' => 'icon', 'label' => 'Icon', 'rules' => 'required|trim|max_length[120]'],
+      ['field' => 'idMenu', 'label' => 'Menu', 'rules' => 'required|trim|max_length[120]'],
+      ['field' => 'name', 'label' => 'Submenu', 'rules' => 'required|trim|max_length[120]'],
       ['field' => 'link', 'label' => 'Link', 'rules' => 'required|trim|max_length[120]'],
       ['field' => 'isActive', 'label' => 'Status', 'rules' => 'required|trim|numeric|max_length[1]']
     ];
@@ -82,7 +83,7 @@ class Menu extends MX_Controller
       '_id'          => trim(isset($_POST['_id']) ? $_POST['_id'] : ''),
     ];
 
-    $result = $this->menu->deleteData($send);
+    $result = $this->submenu->deleteData($send);
     echo json_encode($result);
   }
 
@@ -95,7 +96,7 @@ class Menu extends MX_Controller
       '_id'          => trim(isset($_POST['_id']) ? $_POST['_id'] : ''),
     ];
 
-    $result = $this->menu->editData($send);
+    $result = $this->submenu->editData($send);
     echo json_encode($result);
   }
 
@@ -118,7 +119,7 @@ class Menu extends MX_Controller
       'isActive'     => trim(isset($_POST['isActive']) ? $_POST['isActive'] : '')
     ];
 
-    $result = $this->menu->updateData($send);
+    $result = $this->submenu->updateData($send);
     echo json_encode($result);
   }
 
@@ -142,7 +143,7 @@ class Menu extends MX_Controller
       echo json_encode($validateKey); exit;
     }
 
-    $result = $this->menu->getMenu();
+    $result = $this->submenu->getMenu();
     echo json_encode($result);
   }
 }
