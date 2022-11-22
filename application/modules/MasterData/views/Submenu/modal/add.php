@@ -14,7 +14,6 @@
           <div class="mb-3 row">
             <label for="a_idMenu" class="col-sm-2 col-form-label text-end">Menu <span class="text-danger">*</span></label>
             <div class="col-sm">
-              <!-- <input type="text" class="form-control autohide-invalid" id="a_idMenu" name="idMenu" placeholder="Please enter value here.." /> -->
               <select class="form-select custom-select autohide-invalid" id="a_idMenu" name="idMenu">
                 <option value="">Please select value here..</option>
                 <?php foreach ($menuData as $key => $value) : ?>
