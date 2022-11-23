@@ -5,6 +5,11 @@
       {
         "title": "Call to undefined method MY_Loader::_ci_object_to_array()",
         "url": "https://stackoverflow.com/questions/41557760/codeigniter-hmvc-object-to-array-error"
+      },
+      {
+        "title": "strpos(): Non-string needles will be interpreted as strings in the future. Use an explicit chr() call to preserve the current behavior | MX/Router.php:239",
+        "url": "https://www.initekno.com/error-di-router-codeigniter-versi-3-1-10-dan-php-7/",
+        "solution": "replace with 'if ($suffix && strpos($class, $suffix) === FALSE)'"
       }
     ],
   }
