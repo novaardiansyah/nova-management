@@ -1,6 +1,6 @@
 let autohideInvalid = document.querySelectorAll('.autohide-invalid');
 [...autohideInvalid].forEach((element) => {
-  element.addEventListener('click', function(e) {
+  element.addEventListener('focus', function(e) {
     let name = e.target.getAttribute('name');
     let invalidFeedback = document.querySelector(`.invalid-feedback.${name}`);
     if (invalidFeedback !== null) invalidFeedback.style.display = 'none';
@@ -95,8 +95,17 @@ function ReloadPage(params = {}) {
   location.reload();
 }
 
-function RedirectTo(url) {
-  window.location.href = url;
+function RedirectTo(url, params = {}) {
+  if (params.afterTimeout !== undefined) 
+  {
+    setTimeout(() => {
+      window.location.href = url;
+    }, params.afterTimeout);
+
+    return true;  
+  }
+
+  return window.location.href = url;
 }
 
 function base_url(path = '')

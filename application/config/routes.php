@@ -51,6 +51,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 */
 $route['masterData'] = 'masterData/menu/index';
 
-$route['default_controller'] = 'Main';
-$route['404_override'] = '';
+$route['default_controller']   = 'Auth';
+$route['404_override']         = '';
 $route['translate_uri_dashes'] = FALSE;

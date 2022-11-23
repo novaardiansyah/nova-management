@@ -10,6 +10,7 @@
 
     <link rel="stylesheet" href="<?= base_url('assets/mazer/assets/css/shared/iconly.css'); ?>">
     <link rel="stylesheet" href="<?= base_url('assets/mazer/assets/extensions/toastify-js/src/toastify.css'); ?>">
+    <link rel="stylesheet" href="<?= base_url('assets/mazer/assets/extensions/sweetalert2/sweetalert2.min.css'); ?>">
     
     <?php if (isset($style)) : ?>
       <?php foreach ($style as $key => $value) : ?>

@@ -101,7 +101,7 @@ function addData()
   const { form, url, method, formData } = setupForm('form-addData', 'formData');
   
   formData.append(startup.crlf_name, startup.crlf_token);
-
+  
   let response = fetch(url, {
     method: method,
     body: formData
