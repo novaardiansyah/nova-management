@@ -22,10 +22,10 @@ function format_date($data, $format = 'Y-m-d H:i:s')
 function getKey($typeKey = 'encoded_key')
 {
   $ci = get_instance();
-
-  $encoded_key = $ci->config->item('encoded_key');
-  $secret_key = $ci->config->item('secret_key');
-  $encrypt_key = $ci->config->item('encrypt_key');
+  
+  $encoded_key       = $ci->config->item('encoded_key');
+  $secret_key        = $ci->config->item('secret_key');
+  $encrypt_key       = $ci->config->item('encrypt_key');
   $authorization_key = $ci->config->item('authorization_key');
 
   switch ($typeKey) {
@@ -211,3 +211,9 @@ function arrayToObject($array)
   }
 }
 
+function encryptKey($string, $type = 'encrypt_key', $algo = 'sha256')
+{
+  $value  = $string . getKey($type);
+  $result = hash($algo, $value);
+  return $result;
+}

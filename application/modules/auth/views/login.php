@@ -6,26 +6,37 @@
       </div>
       <h1 class="auth-title">Log in.</h1>
       <p class="auth-subtitle mb-5">Log in with your data that you entered during registration.</p>
-      <form action="">
+
+      <form action="<?= base_url('auth/validateLogin'); ?>" method="post" enctype="multipart/form-data" id="form-login">
         <div class="form-group position-relative has-icon-left mb-4">
-          <input type="text" class="form-control form-control-xl" placeholder="Username">
+          <input type="text" class="form-control form-control-xl autohide-invalid" id="l_username" name="username" placeholder="Username" />
+          <div class="invalid-feedback username"></div>
+
           <div class="form-control-icon">
-            <i class="bi bi-person"></i>
+            <i class="bi bi-person"></i>          
           </div>
         </div>
+        <!-- /.form-group -->
+
         <div class="form-group position-relative has-icon-left mb-4">
-          <input type="password" class="form-control form-control-xl" placeholder="Password">
+          <input type="password" class="form-control form-control-xl autohide-invalid" id="l_password" name="password" placeholder="Password" />
+          <div class="invalid-feedback password"></div>
+
           <div class="form-control-icon">
             <i class="bi bi-shield-lock"></i>
           </div>
         </div>
+        <!-- /.form-group -->
+
         <div class="form-check form-check-lg d-flex align-items-end">
-          <input class="form-check-input me-2" type="checkbox" value="" id="flexCheckDefault">
-          <label class="form-check-label text-gray-600" for="flexCheckDefault">
+          <input class="form-check-input me-2" type="checkbox" value="1" id="l_isRemember" name="isRemember" />
+          <label class="form-check-label text-gray-600" for="l_isRemember">
             Keep me logged in
           </label>
         </div>
-        <button class="btn btn-primary btn-block btn-lg shadow-lg mt-5">Log in</button>
+        <!-- /.form-group -->
+
+        <button type="button" class="btn btn-primary btn-block btn-lg shadow-lg mt-5" onclick="return login()">Log in</button>
       </form>
       
       <div class="text-center mt-5 text-lg fs-4">

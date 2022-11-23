@@ -27,10 +27,12 @@ $config['base_url'] = ((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == "on") ?
 $config['base_url'] .= "://" . $_SERVER['HTTP_HOST'];
 $config['base_url'] .= str_replace(basename($_SERVER['SCRIPT_NAME']), "", $_SERVER['SCRIPT_NAME']);
 
-$config['encrypt_key'] = '85aaac43-bbf3-4dd4-9361-d165415b30d6';
-$config['secret_key'] = 'cb13331d-829c-499f-8089-b301befe3e83';
+$config['encrypt_key']       = '85aaac43-bbf3-4dd4-9361-d165415b30d6';
+$config['secret_key']        = 'cb13331d-829c-499f-8089-b301befe3e83';
 $config['authorization_key'] = '94c8f165-73ed-4940-990e-e645e2f4831b';
-$config['encoded_key'] = '649ce3fa-4ac5-4005-9830-53a2b7e0192a';
+$config['encoded_key']       = '649ce3fa-4ac5-4005-9830-53a2b7e0192a';
+
+$config['secret_prefix'] = 'nova_management';
 /*
 |--------------------------------------------------------------------------
 | Index File
@@ -414,12 +416,12 @@ $config['sess_regenerate_destroy'] = FALSE;
 |       'cookie_httponly') will also affect sessions.
 |
 */
-$config['cookie_prefix']	= 'nova-management';
-$config['cookie_domain']	= '';
-$config['cookie_path']		= '/';
-$config['cookie_secure']	= FALSE;
-$config['cookie_httponly'] 	= FALSE;
-$config['cookie_samesite'] 	= 'Lax';
+$config['cookie_prefix']   = 'nova-management';
+$config['cookie_domain']   = '';
+$config['cookie_path']     = '/';
+$config['cookie_secure']   = FALSE;
+$config['cookie_httponly'] = FALSE;
+$config['cookie_samesite'] = 'Lax';
 
 /*
 |--------------------------------------------------------------------------

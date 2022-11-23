@@ -21,7 +21,8 @@ class Auth extends MX_Controller
         base_url('assets/css/main.css')
       ],
       'script' => [
-        base_url('assets/js/main.js')
+        base_url('assets/js/main.js'),
+        base_url('assets/js/auth/login.js')
       ]
     ];
 
@@ -64,6 +65,46 @@ class Auth extends MX_Controller
     ];
 
     $this->_loadLayout('auth/forgotPassword', $data);
+  }
+
+  public function validateLogin()
+  {
+    $csrf_renewed = $this->security->get_csrf_hash();
+    $validate     = $this->_r_validateLogin();
+
+    if ($validate->run() == false)
+    {
+      echo json_encode(['status' => false, 'message' => 'Validation is invalid.', 'data' => ['csrf_renewed' => $csrf_renewed, 'errors' => $validate->error_array()]]); exit;
+    }
+
+    $send = [
+      'csrf_renewed' => $csrf_renewed,
+      'username'     => trim(isset($_POST['username']) ? $_POST['username'] : ''),
+      '_password'    => trim(isset($_POST['password']) ? $_POST['password'] : ''),
+      'isRemember'   => trim(isset($_POST['isRemember']) ? $_POST['isRemember'] : '')
+    ];
+
+    $result = $this->auth->validateLogin($send);
+    $result = arrayToObject($result);
+
+    if ($result->status == true)
+    {
+      destroySession(['user', 'isLogin']);
+      setSession(['user' => $result->data->user, 'isLogin' => true]);
+    }
+
+    echo json_encode($result);
+  }
+
+  private function _r_validateLogin()
+  {
+    $rules = [
+      ['field' => 'username', 'label' => 'Username', 'rules' => 'required|trim|max_length[120]'],
+      ['field' => 'password', 'label' => 'Password', 'rules' => 'required|trim|min_length[6]|max_length[120]'],
+      ['field' => 'isRemember', 'label' => 'Keep me logged in', 'rules' => 'trim|max_length[1]']
+    ];
+
+    return $this->form_validation->set_rules($rules);
   }
 
   private function _loadLayout($path, $data)
