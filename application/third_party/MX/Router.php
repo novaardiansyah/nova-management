@@ -1,7 +1,7 @@
 <?php (defined('BASEPATH')) OR exit('No direct script access allowed');
 
 /* load the MX core module class */
-require dirname(__FILE__).'/Modules.php';
+require dirname(__FILE__) . '/Modules.php';
 
 /**
  * Modular Extensions - HMVC
@@ -236,7 +236,7 @@ class MX_Router extends CI_Router
 	public function set_class($class)
 	{
 		$suffix = $this->config->item('controller_suffix');
-		if (strpos($class, $suffix) === FALSE)
+		if ($suffix && strpos($class, $suffix) === FALSE)
 		{
 			$class .= $suffix;
 		}
