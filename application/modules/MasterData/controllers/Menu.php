@@ -11,6 +11,9 @@ class Menu extends MX_Controller
 
   public function index()
   {
+    $this->load->helper('auth_helper');
+    isLogin();
+
     $data = [
       'title'    => 'Menu',
       'subtitle' => 'Management Menu',

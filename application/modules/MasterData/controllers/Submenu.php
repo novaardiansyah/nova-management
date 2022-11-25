@@ -11,6 +11,9 @@ class Submenu extends MX_Controller
 
   public function index()
   {
+    $this->load->helper('auth_helper');
+    isLogin();
+
     $data = [
       'title'    => 'Submenu',
       'subtitle' => 'Management Submenu',

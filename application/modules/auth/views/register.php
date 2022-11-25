@@ -7,32 +7,48 @@
       <h1 class="auth-title">Sign Up</h1>
       <p class="auth-subtitle mb-5">Input your data to register to our website.</p>
       
-      <form action="">
+      <form action="<?= base_url('auth/validateRegister'); ?>" method="post" enctype="multipart/form-data" id="form-register">
         <div class="form-group position-relative has-icon-left mb-4">
-          <input type="text" class="form-control form-control-xl" placeholder="Email">
+          <input type="email" class="form-control form-control-xl" id="l_email" name="email"  placeholder="Email" />
+          <div class="invalid-feedback email"></div>
+
           <div class="form-control-icon">
             <i class="bi bi-envelope"></i>
           </div>
         </div>
+        <!-- /.form-group -->
+
         <div class="form-group position-relative has-icon-left mb-4">
-          <input type="text" class="form-control form-control-xl" placeholder="Username">
+          <input type="text" class="form-control form-control-xl" id="l_username" name="username" placeholder="Username" />
+          <div class="invalid-feedback username"></div>
+
           <div class="form-control-icon">
             <i class="bi bi-person"></i>
           </div>
         </div>
+        <!-- /.form-group -->
+
         <div class="form-group position-relative has-icon-left mb-4">
-          <input type="password" class="form-control form-control-xl" placeholder="Password">
+          <input type="password" class="form-control form-control-xl" id="l_password" name="password" placeholder="Password" />
+          <div class="invalid-feedback password"></div>
+
           <div class="form-control-icon">
             <i class="bi bi-shield-lock"></i>
           </div>
         </div>
+        <!-- /.form-group -->
+
         <div class="form-group position-relative has-icon-left mb-4">
-          <input type="password" class="form-control form-control-xl" placeholder="Confirm Password">
+          <input type="password" class="form-control form-control-xl" id="l_confirmPassword" name="confirmPassword" placeholder="Confirm Password" />
+          <div class="invalid-feedback confirmPassword"></div>
+
           <div class="form-control-icon">
             <i class="bi bi-shield-lock"></i>
           </div>
         </div>
-        <button class="btn btn-primary btn-block btn-lg shadow-lg mt-5">Sign Up</button>
+        <!-- /.form-group -->
+
+        <button type="button" class="btn btn-primary btn-block btn-lg shadow-lg mt-5" onclick="return register()">Sign Up</button>
       </form>
       
       <div class="text-center mt-5 text-lg fs-4">
