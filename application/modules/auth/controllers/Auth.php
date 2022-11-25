@@ -41,7 +41,8 @@ class Auth extends MX_Controller
         base_url('assets/css/main.css')
       ],
       'script' => [
-        base_url('assets/js/main.js')
+        base_url('assets/js/main.js'),
+        base_url('assets/js/auth/register.js')
       ]
     ];
 
@@ -105,6 +106,54 @@ class Auth extends MX_Controller
     ];
 
     return $this->form_validation->set_rules($rules);
+  }
+
+  public function validateRegister()
+  {
+    $csrf_renewed = $this->security->get_csrf_hash();
+    $validate     = $this->_r_validateRegister();
+
+    if ($validate->run() == false)
+    {
+      echo json_encode(['status' => false, 'message' => 'Validation is invalid.', 'data' => ['csrf_renewed' => $csrf_renewed, 'errors' => $validate->error_array()]]); exit;
+    }
+
+    $send = [
+      'csrf_renewed'    => $csrf_renewed,
+      'email'           => trim(isset($_POST['email']) ? $_POST['email'] : ''),
+      'username'        => trim(isset($_POST['username']) ? $_POST['username'] : ''),
+      '_password'       => trim(isset($_POST['password']) ? $_POST['password'] : ''),
+      'confirmPassword' => trim(isset($_POST['confirmPassword']) ? $_POST['confirmPassword'] : ''),
+    ];
+
+    $result = $this->auth->validateRegister($send);
+    $result = arrayToObject($result);
+
+    if ($result->status == true)
+    {
+      destroySession(['user', 'isLogin']);
+      setSession(['user' => $result->data->user, 'isLogin' => true]);
+    }
+
+    echo json_encode($result);
+  }
+
+  private function _r_validateRegister()
+  {
+    $rules = [
+      ['field' => 'email', 'label' => 'Email', 'rules' => 'required|trim|max_length[120]'],
+      ['field' => 'username', 'label' => 'Username', 'rules' => 'required|trim|max_length[120]'],
+      ['field' => 'password', 'label' => 'Password', 'rules' => 'required|trim|min_length[6]|max_length[120]'],
+      ['field' => 'confirmPassword', 'label' => 'Confirm Password', 'rules' => 'required|trim|min_length[6]|max_length[120]'],
+    ];
+
+    return $this->form_validation->set_rules($rules);
+  }
+
+  public function logout()
+  {
+    destroySession(['user', 'isLogin']);
+    redirect(base_url('auth'));
   }
 
   private function _loadLayout($path, $data)

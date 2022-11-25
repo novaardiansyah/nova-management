@@ -10,6 +10,9 @@ class Main extends MX_Controller
 
   public function index()
   {
+    $this->load->helper('auth_helper');
+    isLogin();
+
     $data = [
       'title'    => 'Dashboard',
       'subtitle' => 'Dashboard',

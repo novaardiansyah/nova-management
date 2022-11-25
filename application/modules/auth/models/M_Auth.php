@@ -34,8 +34,6 @@ class M_Auth extends CI_Model
     $user = $this->db->query("SELECT a.id, a.idRole, a.username, a.email, a.isActive, a.isDeleted FROM users AS a WHERE a.username = '$username' AND a.password = '$password'")->row();
     if (empty($user)) return ['status' => false, 'message' => 'Username atau password tidak valid.', 'data' => ['error' => '64B7L', 'csrf_renewed' => $csrf_renewed, 'query' => $this->db->last_query()]];
 
-    if ((int) $user->isActive !== 1) return ['status' => false, 'message' => 'Akun belum diaktifasi, silahkan aktifasi terlebih dahulu.', 'data' => ['error' => 'IS3P2', 'csrf_renewed' => $csrf_renewed, 'query' => '']];
-    
     if ((int) $user->isDeleted == 1) return ['status' => false, 'message' => 'Akun sudah dihapus, silahkan hubungi customer support kami.', 'data' => ['error' => 'CHYS0', 'csrf_renewed' => $csrf_renewed, 'query' => '']];
 
     $this->db->update('users', ['last_on' => getTimes('now')], ['id' => $user->id]);
@@ -48,5 +46,34 @@ class M_Auth extends CI_Model
     ];
 
     return ['status' => true, 'message' => 'Login berhasil, harap tunggu proses masuk.', 'data' => ['user' => $user, 'csrf_renewed' => $csrf_renewed]];
+  }
+
+  public function validateRegister($data = [])
+  {
+    $csrf_renewed = trim(isset($data['csrf_renewed']) ? $data['csrf_renewed'] : '');
+    $email        = trim(isset($data['email']) ? $data['email'] : '');
+    $username     = trim(isset($data['username']) ? $data['username'] : '');
+    $_password    = trim(isset($data['_password']) ? $data['_password'] : '');
+    $password     = encryptKey($_password);
+
+    $user = $this->db->query("SELECT a.id, a.idRole, a.username, a.email, a.isActive, a.isDeleted FROM users AS a WHERE a.username = '$username' AND a.email = '$email'")->row();
+    if (!empty($user)) return ['status' => false, 'message' => 'Username atau email sudah terdaftar.', 'data' => ['error' => 'VA4US', 'csrf_renewed' => $csrf_renewed, 'query' => $this->db->last_query()]];
+
+    $send = [
+      'idRole'     => 5,
+      'username'   => $username,
+      'email'      => $email,
+      'password'   => $password,
+      'last_on'    => getTimes('now'),
+      'isDeleted'  => 0,
+      'isActive'   => 0,
+      'created_by' => 1
+    ];
+    
+    $this->db->insert('users', $send);
+    $user = $this->db->query("SELECT a.id, a.idRole, a.username, a.email, a.isActive, a.isDeleted FROM users AS a WHERE a.username = '$username' AND a.email = '$email'")->row();
+    if (empty($user)) return ['status' => false, 'message' => 'Registrasi tidak berhasil, silahkan coba lagi.', 'data' => ['error' => '83MWE', 'csrf_renewed' => $csrf_renewed, 'query' => $this->db->last_query()]];
+
+    return ['status' => true, 'message' => 'Registrasi berhasil, harap tunggu proses masuk.', 'data' => ['user' => $user, 'csrf_renewed' => $csrf_renewed]];
   }
 } 
