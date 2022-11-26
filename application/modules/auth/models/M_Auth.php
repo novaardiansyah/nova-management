@@ -30,7 +30,9 @@ class M_Auth extends CI_Model
     $_password    = trim(isset($data['_password']) ? $data['_password'] : '');
     $password     = encryptKey($_password);
 
-    $user = $this->db->query("SELECT a.id, a.idRole, a.username, a.email, a.isActive, a.isDeleted FROM users AS a WHERE a.username = '$username' AND a.password = '$password'")->row();
+    $user = $this->db->query("SELECT a.id, a.idRole, a.username, a.email, a.isActive, a.isDeleted, a.activate_at, b.name AS nameRole
+      FROM users AS a
+    INNER JOIN role AS b ON a.idRole = b.id WHERE a.username = '$username' AND a.password = '$password'")->row();
 
     if (empty($user)) return ['status' => false, 'message' => 'Username atau password tidak valid.', 'data' => ['error' => '64B7L', 'csrf_renewed' => $csrf_renewed, 'query' => $this->db->last_query()]];
 
@@ -74,10 +76,13 @@ class M_Auth extends CI_Model
     $this->db->update('users', ['last_on' => getTimes('now')], ['id' => $user->id]);
     
     $rp_user = [
-      'id'       => custom_encode($user->id),
-      'idRole'   => custom_encode($user->idRole),
-      'username' => $user->username,
-      'email'    => $user->email
+      'id'          => custom_encode($user->id),
+      'idRole'      => custom_encode($user->idRole),
+      'nameRole'    => $user->nameRole,
+      'username'    => $user->username,
+      'email'       => $user->email,
+      'isActive'    => $user->isActive,
+      'activate_at' => $user->activate_at
     ];
 
     $rp_token = [
