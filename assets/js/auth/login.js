@@ -4,9 +4,6 @@ function login()
   
   formData.append(startup.crlf_name, startup.crlf_token);
   
-  let isRemember = formData.get('isRemember');
-  if (isRemember == null) formData.append('isRemember', '0'); 
-
   let response = fetch(url, {
     method: method,
     body: formData

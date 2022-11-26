@@ -81,8 +81,7 @@ class Auth extends MX_Controller
     $send = [
       'csrf_renewed' => $csrf_renewed,
       'username'     => trim(isset($_POST['username']) ? $_POST['username'] : ''),
-      '_password'    => trim(isset($_POST['password']) ? $_POST['password'] : ''),
-      'isRemember'   => trim(isset($_POST['isRemember']) ? $_POST['isRemember'] : '')
+      '_password'    => trim(isset($_POST['password']) ? $_POST['password'] : '')
     ];
 
     $result = $this->auth->validateLogin($send);
@@ -92,6 +91,7 @@ class Auth extends MX_Controller
     {
       destroySession(['user', 'isLogin']);
       setSession(['user' => $result->data->user, 'isLogin' => true]);
+      setCustomCookie($result->data->token->name, $result->data->token->value, $result->data->token->expired_at);
     }
 
     echo json_encode($result);
@@ -101,8 +101,7 @@ class Auth extends MX_Controller
   {
     $rules = [
       ['field' => 'username', 'label' => 'Username', 'rules' => 'required|trim|max_length[120]'],
-      ['field' => 'password', 'label' => 'Password', 'rules' => 'required|trim|min_length[6]|max_length[120]'],
-      ['field' => 'isRemember', 'label' => 'Keep me logged in', 'rules' => 'trim|max_length[1]']
+      ['field' => 'password', 'label' => 'Password', 'rules' => 'required|trim|min_length[6]|max_length[120]']
     ];
 
     return $this->form_validation->set_rules($rules);
@@ -152,8 +151,8 @@ class Auth extends MX_Controller
 
   public function logout()
   {
-    destroySession(['user', 'isLogin']);
-    redirect(base_url('auth'));
+    $this->load->helper('auth_helper');
+    return invalidLogin();
   }
 
   private function _loadLayout($path, $data)

@@ -48,7 +48,7 @@
         </div>
         <!-- /.form-group -->
 
-        <button type="button" class="btn btn-primary btn-block btn-lg shadow-lg mt-5" onclick="return register()">Sign Up</button>
+        <button type="button" class="btn btn-primary btn-block btn-lg shadow-lg" onclick="return register()">Sign Up</button>
       </form>
       
       <div class="text-center mt-5 text-lg fs-4">

@@ -217,3 +217,90 @@ function encryptKey($string, $type = 'encrypt_key', $algo = 'sha256')
   $result = hash($algo, $value);
   return $result;
 }
+
+function random_tokens($length, $type = null, $seconds = false)
+{
+  $token = "";
+
+  $lower_case = 'abcdefghijklmnopqrstuvwxyz';
+  $upper_case = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  $numbers    = '0123456789';
+
+  if ($type == null) {
+    $type = ['lowercase', 'uppercase', 'numeric'];
+  }
+
+  $final_string = '';
+
+  if (in_array('lowercase', $type)) {
+    $final_string .= $lower_case;
+  }
+
+  if (in_array('uppercase', $type)) {
+    $final_string .= $upper_case;
+  }
+
+  if (in_array('numeric', $type)) {
+    $final_string .= $numbers;
+  }
+
+  $max = strlen($final_string);
+
+  for ($i = 0; $i < $length; $i++) {
+    $token .= $final_string[crypto_rand_secure(0, $max - 1)];
+  }
+
+  if ($seconds) {
+    $token .= getTimes('now', 's');
+  }
+
+  return $token;
+}
+
+function crypto_rand_secure($min, $max)
+{
+  $range = $max - $min;
+  if ($range < 1) return $min; // not so random...
+
+  $log    = ceil(log($range, 2));
+  $bytes  = (int) ($log / 8) + 1;    // length in bytes
+  $bits   = (int) $log + 1;          // length in bits
+  $filter = (int) (1 << $bits) - 1;  // set all lower bits to 1
+
+  do {
+    $rnd = hexdec(bin2hex(openssl_random_pseudo_bytes($bytes)));
+    $rnd = $rnd & $filter; // discard irrelevant bits
+  } while ($rnd > $range);
+
+  return $min + $rnd;
+}
+
+function getCustomCookie($name, $prefix = true)
+{
+  $ci = get_instance();
+
+  if ($prefix)
+  {
+    $name = $ci->config->item('cookie_prefix') . $name;
+  }
+
+  return $ci->input->cookie($name, true);
+}
+
+function setCustomCookie($name, $value, $expire = null)
+{
+  $ci = get_instance();
+
+  if (!$expire) 
+  {
+    $expire = getTimes('-1 hours');
+  }
+
+  $ci->input->set_cookie([
+    'name'   => $name,
+    'value'  => $value,
+    'expire' => strtotime($expire)
+  ]);
+
+  return getCustomCookie($name);
+}

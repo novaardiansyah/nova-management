@@ -28,15 +28,7 @@
         </div>
         <!-- /.form-group -->
 
-        <div class="form-check form-check-lg d-flex align-items-end">
-          <input class="form-check-input me-2" type="checkbox" value="1" id="l_isRemember" name="isRemember" />
-          <label class="form-check-label text-gray-600" for="l_isRemember">
-            Keep me logged in
-          </label>
-        </div>
-        <!-- /.form-group -->
-
-        <button type="button" class="btn btn-primary btn-block btn-lg shadow-lg mt-5" onclick="return login()">Log in</button>
+        <button type="button" class="btn btn-primary btn-block btn-lg shadow-lg" onclick="return login()">Log in</button>
       </form>
       
       <div class="text-center mt-5 text-lg fs-4">
