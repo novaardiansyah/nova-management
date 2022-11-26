@@ -155,10 +155,10 @@ function getSession($session = '', $prefix = true)
   $ci = get_instance();
 
   if ($prefix) {
-    return $ci->session->userdata($ci->config->item('secret_prefix') . '_' . $session);
+    return $session ? $ci->session->userdata($ci->config->item('secret_prefix') . '_' . $session) : $ci->session->userdata();
   }
 
-  return $ci->session->userdata($session);
+  return $session ? $ci->session->userdata($session) : $ci->session->userdata();
 }
 
 function destroySession($session = [], $prefix = true)
