@@ -10,6 +10,10 @@
         "title": "strpos(): Non-string needles will be interpreted as strings in the future. Use an explicit chr() call to preserve the current behavior | MX/Router.php:239",
         "url": "https://www.initekno.com/error-di-router-codeigniter-versi-3-1-10-dan-php-7/",
         "solution": "replace with 'if ($suffix && strpos($class, $suffix) === FALSE)'"
+      },
+      {
+        "title": "Error: MySQL Shutdown Unexpectedly.",
+        "ur": "https://stackoverflow.com/questions/18022809/how-to-solve-error-mysql-shutdown-unexpectedly"
       }
     ],
   }

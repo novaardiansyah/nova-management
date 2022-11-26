@@ -27,25 +27,72 @@ class M_Auth extends CI_Model
   {
     $csrf_renewed = trim(isset($data['csrf_renewed']) ? $data['csrf_renewed'] : '');
     $username     = trim(isset($data['username']) ? $data['username'] : '');
-    $isRemember   = trim(isset($data['isRemember']) ? $data['isRemember'] : '');
     $_password    = trim(isset($data['_password']) ? $data['_password'] : '');
     $password     = encryptKey($_password);
 
     $user = $this->db->query("SELECT a.id, a.idRole, a.username, a.email, a.isActive, a.isDeleted FROM users AS a WHERE a.username = '$username' AND a.password = '$password'")->row();
+
     if (empty($user)) return ['status' => false, 'message' => 'Username atau password tidak valid.', 'data' => ['error' => '64B7L', 'csrf_renewed' => $csrf_renewed, 'query' => $this->db->last_query()]];
 
     if ((int) $user->isDeleted == 1) return ['status' => false, 'message' => 'Akun sudah dihapus, silahkan hubungi customer support kami.', 'data' => ['error' => 'CHYS0', 'csrf_renewed' => $csrf_renewed, 'query' => '']];
 
+    $token = $this->db->query("SELECT a.id, a.idUser, a.idType, a.token, a.isActive, a.expired_at FROM tokens AS a WHERE a.idUser = '$user->id' AND a.idType = 2 AND a.isActive = 1")->row();
+
+    $newToken = random_tokens(63, null, true);
+    if (!empty($token))
+    {
+      // * Token Expired
+      if (format_date($token->expired_at) < getTimes('now')) 
+      {
+        $s_tokens = [
+          'token'      => $newToken,
+          'isActive'   => 1,
+          'updated_by' => 1,
+          'updated_at' => getTimes('now'),
+          'expired_at' => getTimes('+7 day', 'Y-m-d') . ' 23:59:59'
+        ];
+
+        $this->db->update('tokens', $s_tokens, ['id' => $token->id]);
+        $token->token = $newToken;
+      }
+    } else {
+      $s_tokens = [
+        'idUser'     => $user->id,
+        'idType'     => 2,
+        'token'      => $newToken,
+        'isActive'   => 1,
+        'created_by' => 1,
+        'created_at' => getTimes('now'),
+        'expired_at' => getTimes('+7 day', 'Y-m-d') . ' 23:59:59'
+      ];
+
+      $this->db->insert('tokens', $s_tokens);
+
+      $token = $this->db->query("SELECT a.id, a.idUser, a.idType, a.token, a.isActive, a.expired_at FROM tokens AS a WHERE a.idUser = '$user->id' AND a.idType = 2 AND a.isActive = 1")->row();
+    }
+
     $this->db->update('users', ['last_on' => getTimes('now')], ['id' => $user->id]);
     
-    $user = [
+    $rp_user = [
       'id'       => custom_encode($user->id),
       'idRole'   => custom_encode($user->idRole),
       'username' => $user->username,
       'email'    => $user->email
     ];
 
-    return ['status' => true, 'message' => 'Login berhasil, harap tunggu proses masuk.', 'data' => ['user' => $user, 'csrf_renewed' => $csrf_renewed]];
+    $rp_token = [
+      'name'       => 'token-login',
+      'value'      => $token->token . ';' . custom_encode($user->id) . ';' . custom_encode($token->idType),
+      'expired_at' => $token->expired_at
+    ];
+
+    $data = [
+      'user'         => $rp_user, 
+      'token'        => $rp_token,
+      'csrf_renewed' => $csrf_renewed
+    ];
+
+    return ['status' => true, 'message' => 'Login berhasil, harap tunggu proses masuk.', 'data' => $data];
   }
 
   public function validateRegister($data = [])

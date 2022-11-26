@@ -55,4 +55,34 @@ class M_Main extends CI_Model
 
     return ['status' => true, 'message' => 'Data berhasil ditemukan.', 'data' => $response];
   }
+
+  public function validateTokenLogin($data = [])
+  {
+    $csrf_renewed = trim(isset($data['csrf_renewed']) ? $data['csrf_renewed'] : '');
+
+    $token   = trim(isset($data['token']) ? $data['token'] : '');
+    $_idUser = trim(isset($data['idUser']) ? $data['idUser'] : '');
+    $idUser  = $_idUser ? custom_decode($_idUser) : '';
+    $_idType = trim(isset($data['idType']) ? $data['idType'] : '');
+    $idType  = $_idType ? custom_decode($_idType) : '';
+
+    $result = $this->db->query("SELECT a.id, a.idUser, a.idType, a.token, a.isActive, a.expired_at FROM tokens AS a WHERE a.idUser = '$idUser' AND a.idType = '$idType' AND a.isActive = 1")->row();
+
+    if (empty($result)) return ['status' => false, 'message' => 'Sesi anda tidak valid, silahkan login kembali.', 'data' => ['error' => '3FBMO', 'csrf_renewed' => $csrf_renewed]];
+
+    // * Token Invalid
+    if ($token !== $result->token) return ['status' => false, 'message' => 'Sesi anda telah habis, silahkan login kembali.', 'data' => ['error' => 'TK4H4', 'csrf_renewed' => $csrf_renewed]];
+
+    // * Token Expired
+    if (format_date($result->expired_at) < getTimes('now')) return ['status' => false, 'message' => 'Sesi anda telah habis, silahkan login kembali.', 'data' => ['error' => 'F0ZAX', 'expired_at'   => format_date($result->expired_at), 'csrf_renewed' => $csrf_renewed]];
+
+    $data = [
+      'idUser'       => $_idUser,
+      'idType'       => $_idType,
+      'token'        => $token,
+      'csrf_renewed' => $csrf_renewed
+    ];
+
+    return ['status' => true, 'message' => 'Validasi berhasil, sesi anda aman.', 'data' => $data];
+  }
 }

@@ -391,13 +391,13 @@ $config['encryption_key'] = $config['encrypt_key'];
 | except for 'cookie_prefix' and 'cookie_httponly', which are ignored here.
 |
 */
-$config['sess_driver'] = 'files';
-$config['sess_cookie_name'] = 'nova-management';
-$config['sess_samesite'] = 'Lax';
-$config['sess_expiration'] = 7200;
-$config['sess_save_path'] = sys_get_temp_dir();
-$config['sess_match_ip'] = FALSE;
-$config['sess_time_to_update'] = 300;
+$config['sess_driver']             = 'files';
+$config['sess_cookie_name']        = 'nova-management';
+$config['sess_samesite']           = 'Lax';
+$config['sess_expiration']         = 7200;
+$config['sess_save_path']          = sys_get_temp_dir();
+$config['sess_match_ip']           = FALSE;
+$config['sess_time_to_update']     = 300;
 $config['sess_regenerate_destroy'] = FALSE;
 
 /*
@@ -416,7 +416,7 @@ $config['sess_regenerate_destroy'] = FALSE;
 |       'cookie_httponly') will also affect sessions.
 |
 */
-$config['cookie_prefix']   = 'nova-management';
+$config['cookie_prefix']   = 'nova-management-';
 $config['cookie_domain']   = '';
 $config['cookie_path']     = '/';
 $config['cookie_secure']   = FALSE;
@@ -465,11 +465,11 @@ $config['global_xss_filtering'] = FALSE;
 | 'csrf_regenerate' = Regenerate token on every submission
 | 'csrf_exclude_uris' = Array of URIs which ignore CSRF checks
 */
-$config['csrf_protection'] = TRUE;
-$config['csrf_token_name'] = 'nova_management_token';
-$config['csrf_cookie_name'] = 'nova_management_token';
-$config['csrf_expire'] = 7200;
-$config['csrf_regenerate'] = TRUE;
+$config['csrf_protection']   = TRUE;
+$config['csrf_token_name']   = 'csrf-token';
+$config['csrf_cookie_name']  = 'csrf-cookie';
+$config['csrf_expire']       = 7200;
+$config['csrf_regenerate']   = TRUE;
 $config['csrf_exclude_uris'] = array();
 
 /*
