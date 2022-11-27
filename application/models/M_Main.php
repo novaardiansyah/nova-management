@@ -76,10 +76,29 @@ class M_Main extends CI_Model
     // * Token Expired
     if (format_date($result->expired_at) < getTimes('now')) return ['status' => false, 'message' => 'Sesi anda telah habis, silahkan login kembali.', 'data' => ['error' => 'F0ZAX', 'expired_at'   => format_date($result->expired_at), 'csrf_renewed' => $csrf_renewed]];
 
+    $user = $this->db->query("SELECT a.id, a.idRole, a.username, a.email, a.isActive, a.isDeleted, a.activate_at, b.name AS nameRole
+      FROM users AS a
+    INNER JOIN role AS b ON a.idRole = b.id WHERE a.id = '$idUser'")->row();
+
+    if (empty($user)) return ['status' => false, 'message' => 'Data pengguna tidak ditemukan, silahkan coba lagi.', 'data' => ['error' => '64B7L', 'csrf_renewed' => $csrf_renewed, 'query' => $this->db->last_query()]];
+
+    if ((int) $user->isDeleted == 1) return ['status' => false, 'message' => 'Data pengguna sudah dihapus, silahkan hubungi customer support kami.', 'data' => ['error' => 'CHYS0', 'csrf_renewed' => $csrf_renewed]];
+
+    $rp_user = [
+      'id'          => custom_encode($user->id),
+      'idRole'      => custom_encode($user->idRole),
+      'nameRole'    => $user->nameRole,
+      'username'    => $user->username,
+      'email'       => $user->email,
+      'isActive'    => $user->isActive,
+      'activate_at' => $user->activate_at
+    ];
+
     $data = [
       'idUser'       => $_idUser,
       'idType'       => $_idType,
       'token'        => $token,
+      'user'         => $rp_user,
       'csrf_renewed' => $csrf_renewed
     ];
 

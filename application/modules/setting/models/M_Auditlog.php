@@ -10,47 +10,18 @@ class M_Auditlog extends CI_Model
 
   public function auditlogList($data = [])
   {
-    $csrf_renewed = trim(isset($data['csrf_renewed']) ? $data['csrf_renewed'] : '');
-
     $result = $this->db->query("SELECT a.id, a.idUser, a.idRole, a.idType, a.ipAddress, a.description, a.isActive, a.created_at, b.username, b.email, c.name AS name_role, d.name AS name_auditlogs_types FROM auditlogs AS a 
       INNER JOIN users AS b ON a.idUser = b.id
       INNER JOIN role AS c ON a.idRole = c.id
       INNER JOIN auditlogs_types AS d ON a.idType = d.id
     WHERE a.isActive = 1 AND a.idUser IS NOT NULL ORDER BY a.id DESC")->result(); 
 
-    if (empty($result)) return $this->responseFalse('Data tidak tersedia/ditemukan.', 'GJHDW', $csrf_renewed);
+    if (empty($result)) return responseModelFalse('Data tidak tersedia/ditemukan.', 'GJHDW');
 
     foreach ($result as $key => $value) {
       $result[$key]->f1_created_at = format_date($value->created_at, 'F d, Y H:i');
     }
 
-    return $this->responseTrue('Data berhasil ditemukan.', $csrf_renewed, ['list' => $result]);
-  }
-
-  private function responseFalse($message, $error, $csrf_renewed)
-  {
-    $response = [
-      'status'  => false,
-      'message' => $message,
-      'data' => [
-        'error'        => $error,
-        'csrf_renewed' => $csrf_renewed
-      ]
-    ];
-
-    return $response;
-  }
-
-  private function responseTrue($message, $csrf_renewed, $data = [])
-  {
-    $data['csrf_renewed'] = $csrf_renewed;
-
-    $response = [
-      'status'  => true,
-      'message' => $message,
-      'data'    => $data
-    ];
-
-    return $response;
+    return responseModelTrue('Data berhasil ditemukan.', ['list' => $result]);
   }
 }

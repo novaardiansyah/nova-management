@@ -125,7 +125,10 @@ class M_Auth extends CI_Model
     
     $this->db->insert('users', $send);
     $user = $this->db->query("SELECT a.id, a.idRole, a.username, a.email, a.isActive, a.isDeleted FROM users AS a WHERE a.username = '$username' AND a.email = '$email'")->row();
+
     if (empty($user)) return ['status' => false, 'message' => 'Registrasi tidak berhasil, silahkan coba lagi.', 'data' => ['error' => '83MWE', 'csrf_renewed' => $csrf_renewed, 'query' => $this->db->last_query()]];
+
+    insertAuditlog(['idUser' => $user->id, 'idRole' => $user->idRole, 'idType' => 1, 'description' => "$user->username, berhasil registrasi akun pada sistem."]);
 
     return ['status' => true, 'message' => 'Registrasi berhasil, harap tunggu proses masuk.', 'data' => ['user' => $user, 'csrf_renewed' => $csrf_renewed]];
   }

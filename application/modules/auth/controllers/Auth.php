@@ -161,7 +161,7 @@ class Auth extends MX_Controller
   public function logout()
   {
     $this->load->helper('auth_helper');
-    return invalidLogin();
+    return invalidLogin('auth');
   }
 
   private function _loadLayout($path, $data)

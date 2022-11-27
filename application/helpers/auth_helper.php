@@ -1,15 +1,18 @@
 <?php 
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-function isLogin()
+function isLogin($data = [])
 {
   $ci = get_instance();
   $ci->load->model('M_Main', 'main');
+  $redirect = 'auth';
+
+  if (isset($data['redirect'])) $redirect = $data['redirect'];
 
   $csrf_renewed = $ci->security->get_csrf_hash();
   $tokens       = getCustomCookie('token-login');
 
-  if (!isset($tokens)) return invalidLogin();
+  if (!isset($tokens)) return invalidLogin($redirect);
   
   // * Tokens : token;idUser;idType;expired_at
   $tokens = create_array($tokens, ';');
@@ -24,23 +27,23 @@ function isLogin()
   $validateTokenLogin = $ci->main->validateTokenLogin($s_token);
   $validateTokenLogin = arrayToObject($validateTokenLogin);
 
-  if (!$validateTokenLogin->status) return invalidLogin();
+  if (!$validateTokenLogin->status) return invalidLogin($redirect);
+
+  setSession(['user' => $validateTokenLogin->data->user, 'isLogin' => true]);
+
+  if (isset($data['isAlreadyLogin']) && $data['isAlreadyLogin'] == true) return redirect($redirect);
 
   return $validateTokenLogin;
 }
 
 function isAlreadyLogin()
 {
-  $ci = get_instance();
-
-  if (getSession('isLogin')) return redirect('main');
-
-  return true;
+  return isLogin(['redirect' => 'main', 'isAlreadyLogin' => true]);
 }
 
-function invalidLogin()
+function invalidLogin($redirect = 'auth')
 {
   destroySession(['user', 'isLogin']);
   setCustomCookie('token-login', '', null);
-  return redirect('auth');
+  return redirect($redirect);
 }
