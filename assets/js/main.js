@@ -54,6 +54,17 @@ function initDataTables(idTable)
   loaderTable.classList.remove('d-flex');
 }
 
+function toggleLoader(idLoader, action = 'hide')
+{
+  const loader = document.getElementById(idLoader);
+
+  if (action == 'hide')
+  {
+    loader.style.display = 'none';
+    loader.classList.remove('d-flex');
+  }
+}
+
 function denied_specialchar(string) {
   let forbiden_char = [`'`, '"', '<', '>', '+', '=', '%', ';'];
 

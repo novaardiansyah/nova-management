@@ -26,3 +26,81 @@ function backend_layout($content, $data = [])
   
   return true;
 }
+
+function insertAuditlog($data = [])
+{
+  $ci = get_instance();
+  $ci->load->library('user_agent');
+
+  $data = !(empty($data)) ? arrayToObject($data) : [];
+
+  $send = [
+    'idUser'      => isset($data->idUser) ? $data->idUser : 0,
+    'idRole'      => isset($data->idRole) ? $data->idRole : 0,
+    'idType'      => isset($data->idType) ? $data->idType : 0,
+    'description' => isset($data->description) ? $data->description : null,
+    'browser'     => $ci->agent->browser() . ' ' . $ci->agent->version(),
+    'platform'    => $ci->agent->platform(),
+    'ipAddress'   => $ci->input->ip_address(),
+    'userAgent'   => $ci->agent->agent_string(),
+    'isActive'    => 1,
+    'created_by'  => isset($data->idUser) ? $data->idUser : 0,
+    'created_at'  => getTimes('now'),
+  ];
+
+  $ci->db->insert('auditlogs', $send);
+  return ['status' => true, 'message' => 'Berhasil merekam data ke auditlog.', 'data' => $send];
+}
+
+function requestModel($modelPath, $function, $data = [])
+{
+  $ci = get_instance();
+  $ci->load->model($modelPath, 'model');
+
+  $user = getSession('user');
+  $user = $user ? arrayToObject($user) : [];
+
+  $send = [
+    'csrf_renewed' => $ci->security->get_csrf_hash(),
+    'idUser'       => isset($user->id) ? $user->id : 0,
+    'idRole'       => isset($user->idRole) ? $user->idRole : 0,
+    'username'     => isset($user->username) ? $user->username : '',
+    'email'        => isset($user->email) ? $user->email : '',
+  ];
+
+  $send    = array_merge($send, $data);
+  $request = $ci->model->$function($send);
+
+  return $request;
+}
+
+function responseModelFalse($message, $error)
+{
+  $ci = get_instance();
+
+  $response = [
+    'status'  => false,
+    'message' => $message,
+    'data' => [
+      'error'        => $error,
+      'csrf_renewed' => $ci->security->get_csrf_hash(),
+    ]
+  ];
+
+  return $response;
+}
+
+function responseModelTrue($message, $data = [])
+{
+  $ci = get_instance();
+
+  $data = array_merge($data, ['csrf_renewed' => $ci->security->get_csrf_hash()]);
+
+  $response = [
+    'status'  => true,
+    'message' => $message,
+    'data'    => $data
+  ];
+
+  return $response;
+}

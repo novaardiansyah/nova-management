@@ -1,12 +1,14 @@
 <?php 
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Auditlog extends MX_Controller 
+class RoleAccess extends MX_Controller 
 {
+  public $_modelPath;
+
   public function __construct()
   {
     parent::__construct();
-    $this->load->model('M_Auditlog', 'auditlog');
+    $this->_modelPath = 'setting/M_RoleAccess';
   }
 
   public function index()
@@ -15,11 +17,11 @@ class Auditlog extends MX_Controller
     isLogin();
 
     $data = [
-      'title'    => 'Auditlog',
-      'subtitle' => 'Management Auditlog',
+      'title'    => 'Role Access',
+      'subtitle' => 'Menu - Role Access',
       'breadcrumb' => [
         ['title' => 'Setting', 'link' => base_url('setting/auditlog')],
-        ['title' => 'Auditlog', 'link' => base_url('setting/auditlog')]
+        ['title' => 'Role Access', 'link' => base_url('setting/roleAccess')]
       ],
       'style' => [
         base_url('assets/mazer/assets/extensions/simple-datatables/style.css'),
@@ -28,17 +30,16 @@ class Auditlog extends MX_Controller
       'script' => [
         base_url('assets/mazer/assets/extensions/simple-datatables/umd/simple-datatables.js'),
         base_url('assets/js/main.js'),
-        base_url('assets/js/setting/auditlog.js')
+        base_url('assets/js/setting/roleAccess.js')
       ]
     ];
 
-    backend_layout('auditlog/index', $data);
+    backend_layout('roleAccess/index', $data);
   }
   
-  public function auditlogList()
+  public function listRoleAccount()
   {
-    $csrf_renewed = $this->security->get_csrf_hash();
-    $result       = $this->auditlog->auditlogList(['csrf_renewed' => $csrf_renewed]);
+    $result = requestModel($this->_modelPath, 'listRoleAccount');
     echo json_encode($result);
   }
 }
