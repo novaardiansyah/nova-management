@@ -74,7 +74,7 @@ class M_Auth extends CI_Model
     }
 
     $this->db->update('users', ['last_on' => getTimes('now')], ['id' => $user->id]);
-    
+
     $rp_user = [
       'id'          => custom_encode($user->id),
       'idRole'      => custom_encode($user->idRole),
@@ -97,6 +97,7 @@ class M_Auth extends CI_Model
       'csrf_renewed' => $csrf_renewed
     ];
 
+    insertAuditlog(['idUser' => $user->id, 'idRole' => $user->idRole, 'idType' => 1, 'description' => "$user->username, berhasil login kedalam sistem."]);
     return ['status' => true, 'message' => 'Login berhasil, harap tunggu proses masuk.', 'data' => $data];
   }
 
