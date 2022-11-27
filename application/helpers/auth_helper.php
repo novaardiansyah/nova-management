@@ -29,6 +29,15 @@ function isLogin()
   return $validateTokenLogin;
 }
 
+function isAlreadyLogin()
+{
+  $ci = get_instance();
+
+  if (getSession('isLogin')) return redirect('main');
+
+  return true;
+}
+
 function invalidLogin()
 {
   destroySession(['user', 'isLogin']);

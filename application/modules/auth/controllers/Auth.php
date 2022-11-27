@@ -11,6 +11,9 @@ class Auth extends MX_Controller
 
   public function index()
   {
+    $this->load->helper('auth_helper');
+    isAlreadyLogin();
+
     $csrf_renewed = $this->security->get_csrf_hash();
     $mainLogo     = $this->auth->getMainLogo(['csrf_renewed' => $csrf_renewed]);
 
@@ -31,6 +34,9 @@ class Auth extends MX_Controller
 
   public function register()
   {
+    $this->load->helper('auth_helper');
+    isAlreadyLogin();
+
     $csrf_renewed = $this->security->get_csrf_hash();
     $mainLogo     = $this->auth->getMainLogo(['csrf_renewed' => $csrf_renewed]);
 
@@ -51,6 +57,9 @@ class Auth extends MX_Controller
 
   public function forgotPassword()
   {
+    $this->load->helper('auth_helper');
+    isAlreadyLogin();
+    
     $csrf_renewed = $this->security->get_csrf_hash();
     $mainLogo     = $this->auth->getMainLogo(['csrf_renewed' => $csrf_renewed]);
 
