@@ -30,6 +30,7 @@ function submenuList(url = defaultUrl)
             <td>${value.name}</td>
             <td>${value.nameMenu}</td>
             <td>${value.link}</td>
+            <td>${value.sortOrder}</td>
             <td>
               <span class="badge ${parseInt(value.isActive) == 1 ? 'bg-success' : 'bg-danger'}">${parseInt(value.isActive) == 1 ? 'Active' : 'Non-Active'}</span>
             </td>

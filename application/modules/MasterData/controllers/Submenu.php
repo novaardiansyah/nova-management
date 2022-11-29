@@ -29,10 +29,10 @@ class Submenu extends MX_Controller
       'script' => [
         base_url('assets/mazer/assets/extensions/simple-datatables/umd/simple-datatables.js'),
         base_url('assets/js/main.js'),
-        base_url('assets/js/masterData/submenu.js')
+        base_url('assets/js/masterData/submenu.js?v=1')
       ]
     ];
-    // echo json_encode($data['menu']); exit;
+    
     backend_layout('submenu/index', $data);
   }
 
@@ -58,6 +58,7 @@ class Submenu extends MX_Controller
       'name'         => trim(isset($_POST['name']) ? $_POST['name'] : ''),
       '_idMenu'      => trim(isset($_POST['idMenu']) ? $_POST['idMenu'] : ''),
       'link'         => trim(isset($_POST['link']) ? '/' . $_POST['link'] : ''),
+      'sortOrder'    => trim(isset($_POST['sortOrder']) ? $_POST['sortOrder'] : ''),
       'isActive'     => trim(isset($_POST['isActive']) ? $_POST['isActive'] : '')
     ];
 
@@ -71,6 +72,7 @@ class Submenu extends MX_Controller
       ['field' => 'idMenu', 'label' => 'Menu', 'rules' => 'required|trim|max_length[120]'],
       ['field' => 'name', 'label' => 'Submenu', 'rules' => 'required|trim|max_length[120]'],
       ['field' => 'link', 'label' => 'Link', 'rules' => 'required|trim|max_length[120]'],
+      ['field' => 'sortOrder', 'label' => 'Sort Order', 'rules' => 'required|trim|numeric|min_length[1]|max_length[5]|greater_than[-1]'],
       ['field' => 'isActive', 'label' => 'Status', 'rules' => 'required|trim|numeric|max_length[1]']
     ];
 
@@ -119,6 +121,7 @@ class Submenu extends MX_Controller
       '_idMenu'      => trim(isset($_POST['idMenu']) ? $_POST['idMenu'] : ''),
       'name'         => trim(isset($_POST['name']) ? $_POST['name'] : ''),
       'link'         => trim(isset($_POST['link']) ? '/' . $_POST['link'] : ''),
+      'sortOrder'    => trim(isset($_POST['sortOrder']) ? $_POST['sortOrder'] : ''),
       'isActive'     => trim(isset($_POST['isActive']) ? $_POST['isActive'] : '')
     ];
 
@@ -132,6 +135,7 @@ class Submenu extends MX_Controller
       ['field' => 'idMenu', 'label' => 'Menu', 'rules' => 'required|trim|max_length[120]'],
       ['field' => 'name', 'label' => 'Submenu', 'rules' => 'required|trim|max_length[120]'],
       ['field' => 'link', 'label' => 'Link', 'rules' => 'required|trim|max_length[120]'],
+      ['field' => 'sortOrder', 'label' => 'Sort Order', 'rules' => 'required|trim|numeric|min_length[1]|max_length[5]|greater_than[-1]'],
       ['field' => 'isActive', 'label' => 'Status', 'rules' => 'required|trim|numeric|max_length[1]']
     ];
 

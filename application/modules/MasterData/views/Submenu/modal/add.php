@@ -33,11 +33,19 @@
           </div>
 
           <div class="mb-3 row">
-            <label for="a_link" class="col-sm-2 col-form-label text-end">Link <span class="text-danger">*</span></label>
+            <label for="a_link" class="col-sm-2 col-form-label text-end">Link <span class="text-danger d-none">*</span></label>
             <div class="col-sm input-group">
               <span class="input-group-text">/</span>
               <input type="text" class="form-control autohide-invalid" id="a_link" name="link" placeholder="Please enter value here.." />
               <div class="invalid-feedback link"></div>
+            </div>
+          </div>
+
+          <div class="mb-3 row">
+            <label for="a_sortOrder" class="col-sm-2 col-form-label text-end">Sort Order <span class="text-danger">*</span></label>
+            <div class="col-sm">
+              <input type="text" class="form-control autohide-invalid" id="a_sortOrder" name="sortOrder" placeholder="Please enter value here.." value="0" min="0" minlength="1" maxlength="5" />
+              <div class="invalid-feedback sortOrder"></div>
             </div>
           </div>
 

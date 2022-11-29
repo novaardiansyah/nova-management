@@ -12,7 +12,7 @@ function backend_layout($content, $data = [])
   $mainLogo = $ci->main->getMainLogo(['csrf_renewed' => $csrf_renewed]);
 
   $send = [
-    'menu'     => $menu->status ? $menu->data : [],
+    'menu'     => $menu['status'] ? $menu['data'] : [],
     'mainLogo' => $mainLogo['status'] ? $mainLogo['data'] : [],
   ];
   

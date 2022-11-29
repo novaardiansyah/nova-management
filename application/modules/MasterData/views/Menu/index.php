@@ -14,6 +14,7 @@
             <th>Name</th>
             <th>Icon</th>
             <th>Link</th>
+            <th>Sort Order</th>
             <th>Status</th>
             <th>Action</th>
           </tr>
