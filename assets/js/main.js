@@ -41,8 +41,12 @@ function adaptPagination(dataTable) {
 
 function initDataTables(idTable)
 {
-  const table       = document.getElementById(idTable);
-  const loaderTable = document.getElementById('loader-table');
+  const table = document.getElementById(idTable);
+  let loaderTable = document.getElementById('loader-table');
+
+  if (loaderTable == null) {
+    loaderTable = document.querySelector(`.loader-table.${idTable}`);
+  }
 
   let dataTable = new simpleDatatables.DataTable(table);
   dataTable.on("datatable.page", adaptPagination);
