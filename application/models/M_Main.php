@@ -10,9 +10,9 @@ class M_Main extends CI_Model
 
   public function getMenu()
   {
-    $result = $this->db->query("SELECT a.id, a.name, a.icon, a.link, a.isActive FROM menu AS a WHERE a.isActive = 1 AND a.isDeleted = 0")->result();
+    $result = $this->db->query("SELECT a.id, a.name, a.icon, a.link, a.sortOrder, a.isActive FROM menu AS a WHERE a.isActive = 1 AND a.isDeleted = 0 ORDER BY a.sortOrder ASC")->result();
 
-    if (empty($result)) return arrayToObject(['status' => false, 'message' => 'Data tidak ditemukan.', 'data' => ['error' => 'I2W3']]);
+    if (empty($result)) return ['status' => false, 'message' => 'Data tidak ditemukan.', 'data' => ['error' => 'SHW8Z']];
 
     $menu = [];
 
@@ -20,7 +20,7 @@ class M_Main extends CI_Model
     {
       $result[$key]->isSingle = 1;
 
-      $submenu = $this->db->query("SELECT a.id, a.idMenu, a.name, a.link, a.isActive FROM submenu AS a WHERE a.isActive = 1 AND a.idMenu = '$value->id'")->result();
+      $submenu = $this->db->query("SELECT a.id, a.idMenu, a.name, a.link, a.sortOrder, a.isActive FROM submenu AS a WHERE a.isActive = 1 AND a.idMenu = '$value->id' ORDER BY a.sortOrder ASC")->result();
 
       $temp = [
         'menu' => $result[$key]
@@ -35,10 +35,7 @@ class M_Main extends CI_Model
       array_push($menu, $temp);
     }
 
-    $response = arrayToObject(['status' => true, 'message' => 'Data berhasil ditemukan.', 'data' => []]);
-    $response->data = $menu;
-    
-    return $response;
+    return ['status' => true, 'message' => 'Data berhasil ditemukan.', 'data' => $menu];
   }
 
   public function getMainLogo($data = [])

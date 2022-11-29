@@ -33,7 +33,7 @@ class M_Submenu extends CI_Model
   {
     $csrf_renewed = trim(isset($data['csrf_renewed']) ? $data['csrf_renewed'] : '');
 
-    $result = $this->db->query("SELECT a.id, a.idMenu, a.name, a.link, a.isActive, b.name AS nameMenu FROM submenu AS a 
+    $result = $this->db->query("SELECT a.id, a.idMenu, a.name, a.link, a.sortOrder, a.isActive, b.name AS nameMenu FROM submenu AS a 
       INNER JOIN menu AS b ON a.idMenu = b.id
     WHERE a.isDeleted = 0 AND b.isDeleted = 0 ORDER BY a.created_at DESC")->result();
     
@@ -67,6 +67,7 @@ class M_Submenu extends CI_Model
       'name'       => trim(isset($data['name']) ? $data['name'] : ''),
       'idMenu'     => $idMenu,
       'link'       => trim(isset($data['link']) ? $data['link'] : ''),
+      'sortOrder'  => trim(isset($data['sortOrder']) ? $data['sortOrder'] : ''),
       'isActive'   => trim(isset($data['isActive']) ? $data['isActive'] : 0),
       'created_by' => 1
     ];
@@ -109,7 +110,7 @@ class M_Submenu extends CI_Model
     $_id = trim(isset($data['_id']) ? $data['_id'] : '');
     $id  = $_id ? custom_decode($_id) : '';
 
-    $result = $this->db->query("SELECT a.id, a.idMenu, a.name, a.link, a.isActive, b.name AS nameMenu FROM submenu AS a 
+    $result = $this->db->query("SELECT a.id, a.idMenu, a.name, a.link, a.sortOrder, a.isActive, b.name AS nameMenu FROM submenu AS a 
       INNER JOIN menu AS b ON a.idMenu = b.id
     WHERE a.isDeleted = 0 AND b.isDeleted = 0 AND a.id = '$id'")->row();
     
@@ -132,13 +133,14 @@ class M_Submenu extends CI_Model
     $_idMenu = trim(isset($data['_idMenu']) ? $data['_idMenu'] : '');
     $idMenu  = $_idMenu ? custom_decode($_idMenu) : '';
 
-    $result = $this->db->query("SELECT a.id, a.idMenu, a.name, a.link, a.isActive FROM submenu AS a WHERE a.isDeleted = 0 AND a.id = '$id'")->row();
+    $result = $this->db->query("SELECT a.id, a.idMenu, a.name, a.link, a.sortOrder, a.isActive FROM submenu AS a WHERE a.isDeleted = 0 AND a.id = '$id'")->row();
     if (empty($result)) return ['status' => false, 'message' => 'Data submenu tidak ditemukan.', 'data' => ['error' => 'PAA8T', 'csrf_renewed' => $csrf_renewed, 'query' => $this->db->last_query()]];
 
     $send = [
       'idMenu'     => $idMenu,
       'name'       => trim(isset($data['name']) ? $data['name'] : ''),
       'link'       => trim(isset($data['link']) ? $data['link'] : ''),
+      'sortOrder'  => trim(isset($data['sortOrder']) ? $data['sortOrder'] : ''),
       'isActive'   => trim(isset($data['isActive']) ? $data['isActive'] : 0),
       'updated_by' => 1,
       'updated_at' => getTimes('now')

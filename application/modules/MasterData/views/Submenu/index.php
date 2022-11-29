@@ -14,6 +14,7 @@
             <th>Submenu</th>
             <th>Menu</th>
             <th>Link</th>
+            <th>Sort Order</th>
             <th>Status</th>
             <th>Action</th>
           </tr>

@@ -12,23 +12,21 @@ class M_Menu extends CI_Model
   {
     $csrf_renewed = trim(isset($data['csrf_renewed']) ? $data['csrf_renewed'] : '');
 
-    $result = $this->db->query("SELECT a.id, a.name, a.icon, a.link, a.isActive FROM menu AS a WHERE a.isDeleted = 0 ORDER BY a.created_at DESC")->result();
+    $result = $this->db->query("SELECT a.id, a.name, a.icon, a.link, a.sortOrder, a.isActive FROM menu AS a WHERE a.isDeleted = 0 ORDER BY a.created_at DESC")->result();
     
-    if (empty($result)) return arrayToObject(['status' => false, 'message' => 'Data tidak ditemukan.', 'data' => ['error' => 'I2W3']]);
+    if (empty($result)) return ['status' => false, 'message' => 'Data tidak ditemukan.', 'data' => ['error' => 'NTCMC']];
 
     foreach ($result as $key => $value) 
     {
       $result[$key]->id = custom_encode($value->id);
     }
 
-    $response = arrayToObject(['status' => true, 'message' => 'Data berhasil ditemukan.', 'data' => [
-      'menu' => [],
-      'csrf_renewed' => ''
-    ]]);
-    $response->data->menu = $result;
-    $response->data->csrf_renewed = $csrf_renewed;
-    
-    return $response;
+    $response = [
+      'menu'         => $result,
+      'csrf_renewed' => $csrf_renewed
+    ];
+
+    return ['status' => true, 'message' => 'Data berhasil ditemukan.', 'data' => $response];
   }
 
   public function addData($data = [])
@@ -39,6 +37,7 @@ class M_Menu extends CI_Model
       'name'       => trim(isset($data['name']) ? $data['name'] : ''),
       'icon'       => trim(isset($data['icon']) ? $data['icon'] : ''),
       'link'       => trim(isset($data['link']) ? $data['link'] : ''),
+      'sortOrder'  => trim(isset($data['sortOrder']) ? $data['sortOrder'] : ''),
       'isActive'   => trim(isset($data['isActive']) ? $data['isActive'] : 0),
       'created_by' => 1
     ];
@@ -85,7 +84,7 @@ class M_Menu extends CI_Model
     $_id = trim(isset($data['_id']) ? $data['_id'] : '');
     $id  = $_id ? custom_decode($_id) : '';
 
-    $result = $this->db->query("SELECT a.id, a.name, a.icon, a.link, a.isActive FROM menu AS a WHERE a.id = '$id' AND a.isDeleted = 0")->row();
+    $result = $this->db->query("SELECT a.id, a.name, a.icon, a.link, a.sortOrder, a.isActive FROM menu AS a WHERE a.id = '$id' AND a.isDeleted = 0")->row();
     
     if (empty($result)) return ['status' => false, 'message' => 'Data tidak ditemukan.', 'data' => ['error' => '7YP7W']];
 
@@ -109,6 +108,7 @@ class M_Menu extends CI_Model
       'name'       => trim(isset($data['name']) ? $data['name'] : ''),
       'icon'       => trim(isset($data['icon']) ? $data['icon'] : ''),
       'link'       => trim(isset($data['link']) ? $data['link'] : ''),
+      'sortOrder'  => trim(isset($data['sortOrder']) ? $data['sortOrder'] : ''),
       'isActive'   => trim(isset($data['isActive']) ? $data['isActive'] : 0),
       'updated_by' => 1,
       'updated_at' => getTimes('now')

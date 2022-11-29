@@ -57,6 +57,7 @@ class Menu extends MX_Controller
       'name'         => trim(isset($_POST['name']) ? $_POST['name'] : ''),
       'icon'         => trim(isset($_POST['icon']) ? 'bi bi-' . $_POST['icon'] : ''),
       'link'         => trim(isset($_POST['link']) ? '/' . $_POST['link'] : ''),
+      'sortOrder'    => trim(isset($_POST['sortOrder']) ? $_POST['sortOrder'] : ''),
       'isActive'     => trim(isset($_POST['isActive']) ? $_POST['isActive'] : '')
     ];
 
@@ -69,7 +70,8 @@ class Menu extends MX_Controller
     $rules = [
       ['field' => 'name', 'label' => 'Name', 'rules' => 'required|trim|max_length[120]'],
       ['field' => 'icon', 'label' => 'Icon', 'rules' => 'required|trim|max_length[120]'],
-      ['field' => 'link', 'label' => 'Link', 'rules' => 'required|trim|max_length[120]'],
+      ['field' => 'link', 'label' => 'Link', 'rules' => 'trim|max_length[120]'],
+      ['field' => 'sortOrder', 'label' => 'Sort Order', 'rules' => 'required|trim|numeric|min_length[1]|max_length[5]|greater_than[-1]'],
       ['field' => 'isActive', 'label' => 'Status', 'rules' => 'required|trim|numeric|max_length[1]']
     ];
 
@@ -118,6 +120,7 @@ class Menu extends MX_Controller
       'name'         => trim(isset($_POST['name']) ? $_POST['name'] : ''),
       'icon'         => trim(isset($_POST['icon']) ? 'bi bi-' . $_POST['icon'] : ''),
       'link'         => trim(isset($_POST['link']) ? '/' . $_POST['link'] : ''),
+      'sortOrder'    => trim(isset($_POST['sortOrder']) ? $_POST['sortOrder'] : ''),
       'isActive'     => trim(isset($_POST['isActive']) ? $_POST['isActive'] : '')
     ];
 
@@ -130,7 +133,8 @@ class Menu extends MX_Controller
     $rules = [
       ['field' => 'name', 'label' => 'Name', 'rules' => 'required|trim|max_length[120]'],
       ['field' => 'icon', 'label' => 'Icon', 'rules' => 'required|trim|max_length[120]'],
-      ['field' => 'link', 'label' => 'Link', 'rules' => 'required|trim|max_length[120]'],
+      ['field' => 'link', 'label' => 'Link', 'rules' => 'trim|max_length[120]'],
+      ['field' => 'sortOrder', 'label' => 'Sort Order', 'rules' => 'required|trim|numeric|min_length[1]|max_length[5]|greater_than[-1]'],
       ['field' => 'isActive', 'label' => 'Status', 'rules' => 'required|trim|numeric|max_length[1]']
     ];
 
