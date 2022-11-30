@@ -30,8 +30,10 @@ function accountList(url = defaultUrl)
             <td>${value.name}</td>
             <td>${value.idCurrency}</td>
             <td>${value.amount}</td>
-            <td>${value.logo}</td>
-            <td>${value.idType}</td>
+            <td>
+              <img src="${base_url('assets/images/financeLogo/' + value.logo)}" alt="${value.logo}" class="img-fluid" style="max-width: 100px;" />
+            </td>
+            <td>${value.name_finance_types}</td>
             <td>
               <span class="badge ${parseInt(value.isActive) == 1 ? 'bg-success' : 'bg-danger'}">${parseInt(value.isActive) == 1 ? 'Active' : 'Non-Active'}</span>
             </td>
@@ -62,18 +64,21 @@ function accountList(url = defaultUrl)
 
     if (callback.status == false && callback.message !== undefined)
     {
-      Toastify({
-        text: stripHtml(callback.message),
-        duration: 5000,
-        close: true,
-        style: {
-          background: startup.colors.danger,
-        }
-      }).showToast();
-
-      return false;
+      return toastifyAlert({message: callback.message, color: 'danger', timer: 5});
     }
     
-    return false;
+    return toastifyAlert({message: 'Terjadi kesalahan internal, silahkan coba lagi (DY2GA).', color: 'danger', timer: 5, close: false});;
   });
+}
+
+function toggleTabs(event, section)
+{
+  event.preventDefault();
+  let listTabs = document.querySelectorAll('.nav-link');
+  
+  listTabs.forEach((element) => {
+    element.classList.remove('active');
+  });
+
+  event.target.classList.add('active');
 }

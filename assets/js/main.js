@@ -206,3 +206,26 @@ function customSweetalert(text, icon, timer, timerProgressBar, willClose, type =
     });
   }
 }
+
+function toastifyAlert(params = {})
+{
+  const { message, color, timer, close } = params;
+
+  let style = {
+    background: startup.colors.info
+  };
+
+  if (color == 'danger')
+  {
+    style = {
+      background: startup.colors.danger
+    };
+  }
+
+  Toastify({
+    text: stripHtml(message),
+    duration: timer ? timer * 1000 : 3000,
+    close: close == undefined ? true : close,
+    style: style
+  }).showToast();
+}
