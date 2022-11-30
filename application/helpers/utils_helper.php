@@ -296,6 +296,8 @@ function setCustomCookie($name, $value, $expire = null)
     $expire = getTimes('-1 hours');
   }
 
+  $expire = format_date($expire, 'Y-m-d') . ' 23:59:59';
+
   $ci->input->set_cookie([
     'name'   => $name,
     'value'  => $value,
