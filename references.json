@@ -14,7 +14,11 @@
       {
         "title": "Error: MySQL Shutdown Unexpectedly.",
         "ur": "https://stackoverflow.com/questions/18022809/how-to-solve-error-mysql-shutdown-unexpectedly"
+      },
+      {
+        "title": "Error: Xampp Control Panel Is Not Showing.",
+        "ur": "https://stackoverflow.com/questions/46627164/xampp-control-panel-is-not-showing"
       }
-    ],
+    ]
   }
 }

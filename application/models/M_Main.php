@@ -71,7 +71,7 @@ class M_Main extends CI_Model
     if ($token !== $result->token) return ['status' => false, 'message' => 'Sesi anda telah habis, silahkan login kembali.', 'data' => ['error' => 'TK4H4', 'csrf_renewed' => $csrf_renewed]];
 
     // * Token Expired
-    if (format_date($result->expired_at) < getTimes('now')) return ['status' => false, 'message' => 'Sesi anda telah habis, silahkan login kembali.', 'data' => ['error' => 'F0ZAX', 'expired_at'   => format_date($result->expired_at), 'csrf_renewed' => $csrf_renewed]];
+    if (format_date($result->expired_at) < getTimes('now')) return ['status' => false, 'message' => 'Sesi anda telah habis, silahkan login kembali.', 'data' => ['error' => 'F0ZAX', 'expired_at' => format_date($result->expired_at), 'csrf_renewed' => $csrf_renewed]];
 
     $user = $this->db->query("SELECT a.id, a.idRole, a.username, a.email, a.isActive, a.isDeleted, a.activate_at, b.name AS nameRole
       FROM users AS a
@@ -94,7 +94,7 @@ class M_Main extends CI_Model
     $data = [
       'idUser'       => $_idUser,
       'idType'       => $_idType,
-      'token'        => $token,
+      'token'        => $result,
       'user'         => $rp_user,
       'csrf_renewed' => $csrf_renewed
     ];
