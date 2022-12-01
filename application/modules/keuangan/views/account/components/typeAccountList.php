@@ -1,4 +1,4 @@
-<section class="section typeAccountList d-none">
+<section class="section tab-content typeAccountList d-none">
   <div class="card">
     <div class="card-header">
       <button type="button" class="btn btn-success btn-sm text-nowrap" data-bs-toggle="modal" data-bs-target="#addData" onclick="return formModalReset()" id="addData-show">

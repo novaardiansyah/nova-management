@@ -40,38 +40,23 @@ class M_Auth extends CI_Model
 
     $token = $this->db->query("SELECT a.id, a.idUser, a.idType, a.token, a.isActive, a.expired_at FROM tokens AS a WHERE a.idUser = '$user->id' AND a.idType = 2 AND a.isActive = 1")->row();
 
-    $newToken = random_tokens(63, null, true);
-    if (!empty($token))
-    {
-      // * Token Expired
-      if (format_date($token->expired_at) < getTimes('now')) 
-      {
-        $s_tokens = [
-          'token'      => $newToken,
-          'isActive'   => 1,
-          'updated_by' => 1,
-          'updated_at' => getTimes('now'),
-          'expired_at' => getTimes('+7 day', 'Y-m-d') . ' 23:59:59'
-        ];
-
-        $this->db->update('tokens', $s_tokens, ['id' => $token->id]);
-        $token->token = $newToken;
-      }
-    } else {
-      $s_tokens = [
-        'idUser'     => $user->id,
-        'idType'     => 2,
-        'token'      => $newToken,
-        'isActive'   => 1,
-        'created_by' => 1,
-        'created_at' => getTimes('now'),
-        'expired_at' => getTimes('+7 day', 'Y-m-d') . ' 23:59:59'
-      ];
-
-      $this->db->insert('tokens', $s_tokens);
-
-      $token = $this->db->query("SELECT a.id, a.idUser, a.idType, a.token, a.isActive, a.expired_at FROM tokens AS a WHERE a.idUser = '$user->id' AND a.idType = 2 AND a.isActive = 1")->row();
+    if (!empty($token)) {
+      $this->db->delete('tokens', ['id' => $token->id]);
     }
+
+    $s_tokens = [
+      'idUser'     => $user->id,
+      'idType'     => 2,
+      'token'      => random_tokens(63, null, true),
+      'isActive'   => 1,
+      'created_by' => 1,
+      'created_at' => getTimes('now'),
+      'expired_at' => getTimes('+7 day', 'Y-m-d') . ' 23:59:59'
+    ];
+
+    $this->db->insert('tokens', $s_tokens);
+
+    $token = $this->db->query("SELECT a.id, a.idUser, a.idType, a.token, a.isActive, a.expired_at FROM tokens AS a WHERE a.idUser = '$user->id' AND a.idType = 2 AND a.isActive = 1")->row();
 
     $this->db->update('users', ['last_on' => getTimes('now')], ['id' => $user->id]);
 

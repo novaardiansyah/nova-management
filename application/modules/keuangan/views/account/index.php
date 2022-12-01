@@ -13,7 +13,7 @@
         <!-- /.nav-item -->
 
         <li class="nav-item">
-          <a href="#" class="nav-link" onclick="return toggleTabs(event, 'typeCurrency')">Type Currency</a>
+          <a href="#" class="nav-link" onclick="return toggleTabs(event, 'typeCurrencyList')">Type Currency</a>
         </li>
         <!-- /.nav-item -->
       </ul>
@@ -23,4 +23,4 @@
 
 <?php $this->load->view('keuangan/account/components/accountList'); ?>
 <?php $this->load->view('keuangan/account/components/typeAccountList'); ?>
-<?php $this->load->view('keuangan/account/components/typeCurrency'); ?>
+<?php $this->load->view('keuangan/account/components/typeCurrencyList'); ?>

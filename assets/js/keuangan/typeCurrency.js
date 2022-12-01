@@ -1,10 +1,10 @@
-const accountListUrl  = base_url('keuangan/account/accountList');
-const wrapAccountList = document.querySelector('.card-body.accountList');
+const typeCurrencyListUrl  = base_url('keuangan/account/accountList');
+const wrap_typeCurrencyList = document.querySelector('.card-body.typeCurrencyList');
 
-localStorage.setItem(accountListUrl, wrapAccountList.innerHTML);
-accountList();
+localStorage.setItem(typeCurrencyListUrl, wrap_typeCurrencyList.innerHTML);
+typeCurrencyList();
 
-function accountList(url = accountListUrl)
+function typeCurrencyList(url = typeCurrencyListUrl)
 {
   const formData = new FormData();
   formData.append(startup.crlf_name, startup.crlf_token);
@@ -20,8 +20,8 @@ function accountList(url = accountListUrl)
       let data = callback.data;
       startup.crlf_token = data.csrf_renewed;
       
-      let accountList = document.querySelector('tbody.accountList');
-      let template    = '';
+      let typeCurrencyList = document.querySelector('tbody.typeCurrencyList');
+      let template        = '';
 
       Object.entries(data.list).forEach(([key, value]) => {
         template += `
@@ -57,9 +57,9 @@ function accountList(url = accountListUrl)
         `;
       });
 
-      accountList.innerHTML = template;
+      typeCurrencyList.innerHTML = template;
             
-      return initDataTables('accountList');
+      return initDataTables('typeCurrencyList');
     }
 
     if (callback.status == false && callback.message !== undefined)
@@ -67,6 +67,6 @@ function accountList(url = accountListUrl)
       return toastifyAlert({message: callback.message, color: 'danger', timer: 5});
     }
     
-    return toastifyAlert({message: 'Terjadi kesalahan internal, silahkan coba lagi (DY2GA).', color: 'danger', timer: 5, close: false});;
+    return toastifyAlert({message: 'Terjadi kesalahan internal, silahkan coba lagi (MGABF).', color: 'danger', timer: 5, close: false});;
   });
 }

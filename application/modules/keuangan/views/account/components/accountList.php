@@ -1,4 +1,4 @@
-<section class="section accountList">
+<section class="section tab-content accountList">
   <div class="card">
     <div class="card-header">
       <button type="button" class="btn btn-success btn-sm text-nowrap" data-bs-toggle="modal" data-bs-target="#addData" onclick="return formModalReset()" id="addData-show">
@@ -7,16 +7,16 @@
       </button>
     </div>
     <div class="card-body accountList">
-      <table class="table table-striped" id="accountList">
+      <table class="table table-striped align-middle" id="accountList">
         <thead>
           <tr>
             <th>No.</th>
             <th>Name</th>
             <th>Currency</th>
             <th>Amount</th>
-            <th>Logo</th>
             <th>Type</th>
             <th>Status</th>
+            <th>Logo</th>
             <th>Action</th>
           </tr>
         </thead>
