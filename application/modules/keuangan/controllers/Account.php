@@ -29,8 +29,11 @@ class Account extends MX_Controller
       ],
       'script' => [
         base_url('assets/mazer/assets/extensions/simple-datatables/umd/simple-datatables.js'),
-        base_url('assets/js/main.js?v=1'),
-        base_url('assets/js/keuangan/account.js')
+        base_url('assets/js/main.js?v=' . getTimes('now', 'YmdH')),
+        base_url('assets/js/keuangan/index.js?v=' . getTimes('now', 'YmdH')),
+        base_url('assets/js/keuangan/account.js?v=' . getTimes('now', 'YmdH')),
+        base_url('assets/js/keuangan/typeAccount.js?v=' . getTimes('now', 'YmdH')),
+        base_url('assets/js/keuangan/typeCurrency.js?v=' . getTimes('now', 'YmdH'))
       ]
     ];
 
