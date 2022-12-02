@@ -74,17 +74,16 @@ function requestModel($modelPath, $function, $data = [])
   return $request;
 }
 
-function responseModelFalse($message, $error)
+function responseModelFalse($message, $error, $data = [])
 {
   $ci = get_instance();
+
+  $data = array_merge($data, ['error' => $error, 'csrf_renewed' => $ci->security->get_csrf_hash()]);
 
   $response = [
     'status'  => false,
     'message' => $message,
-    'data' => [
-      'error'        => $error,
-      'csrf_renewed' => $ci->security->get_csrf_hash(),
-    ]
+    'data'    => $data
   ];
 
   return $response;

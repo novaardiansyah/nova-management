@@ -70,3 +70,74 @@ function accountList(url = accountListUrl)
     return toastifyAlert({message: 'Terjadi kesalahan internal, silahkan coba lagi (DY2GA).', color: 'danger', timer: 5, close: false});;
   });
 }
+
+function refresh_accountList(url = accountListUrl, params = {})
+{
+  const { afterTimeout } = params;
+  let defaultTable = localStorage.getItem(url);
+
+  if (afterTimeout !== undefined) {
+    let delay = afterTimeout - (afterTimeout * 0.50);
+
+    setTimeout(() => {
+      wrapAccountList.innerHTML = defaultTable;
+      accountList(url);
+    }, delay);
+
+    return true;
+  }
+  
+  wrapAccountList.innerHTML = defaultTable;
+  return accountList(url);
+}
+
+// * Add data function (Start) [Nova Ardiansyah - December, 02 2020]
+function addAccount(idModal)
+{
+  toggleModal(idModal, 'open');
+  loaderModalForm(idModal, 'unload');
+}
+
+function storeAccount(idForm)
+{
+  const { form, url, method, formData } = setupForm(`form-${idForm}`, 'formData');
+  formData.append(startup.crlf_name, startup.crlf_token);
+
+  let response = fetch(url, {
+    method: method,
+    body: formData
+  }).then((response) => response.json());
+
+  response.then((callback) => {
+    console.log(callback);
+    let data = callback.data;
+
+    startup.crlf_token = data.csrf_renewed;
+
+    if (callback.status == true && callback.message !== undefined)
+    {
+      toggleModal('addAccount', 'close');
+      return toastifyAlert({message: callback.message, timer: 3, close: true});
+    }
+
+    if (callback.status == false && data.errors !== undefined)
+    {      
+      Object.entries(data.errors).forEach(([key, value]) => {
+        let invalidFeedback = document.querySelector(`.invalid-feedback.${key}`);
+        
+        invalidFeedback.innerHTML     = stripHtml(value);
+        invalidFeedback.style.display = 'inline-block';
+      });
+
+      return false;
+    }
+
+    if (callback.status == false && callback.message !== undefined)
+    {
+      return toastifyAlert({message: callback.message, color: 'danger', timer: 3, close: true});
+    }
+    
+    return toastifyAlert({message: 'Terjadi kesalahan, silahkan muat ulang halaman ini (WC2CE).', color: 'danger', timer: 3, close: true});
+  });
+}
+// * Add data function (End)

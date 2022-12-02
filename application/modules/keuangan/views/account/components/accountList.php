@@ -1,7 +1,9 @@
 <section class="section tab-content accountList">
+  <div class="toggle-modal" id="wrapper-toggle-modal"></div>
+
   <div class="card">
     <div class="card-header">
-      <button type="button" class="btn btn-success btn-sm text-nowrap" data-bs-toggle="modal" data-bs-target="#addData" onclick="return formModalReset()" id="addData-show">
+      <button type="button" class="btn btn-success btn-sm text-nowrap" onclick="return addAccount('addAccount')">
         <i class="bi bi-plus-square"></i>
         <span class="d-none d-lg-inline">Add</span>
       </button>
@@ -32,3 +34,6 @@
     </div>
   </div>
 </section>
+
+<?php $this->load->view('keuangan/account/modal/addAccount'); ?>
+<!-- <?php $this->load->view('masterData/menu/modal/edit'); ?> -->
