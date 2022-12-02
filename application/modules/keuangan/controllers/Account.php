@@ -8,7 +8,7 @@ class Account extends MX_Controller
   public function __construct()
   {
     parent::__construct();
-    $this->_modelPath = 'keuangan/M_Account';
+    $this->_modelPath = 'M_Account';
   }
 
   public function index()
@@ -23,6 +23,9 @@ class Account extends MX_Controller
         ['title' => 'Keuangan', 'link' => base_url('keuangan/account')],
         ['title' => 'Daftar Akun', 'link' => base_url('keuangan/account')]
       ],
+      'currency'    => requestModel($this->_modelPath, 'getCurrency', []),
+      'typeAccount' => requestModel($this->_modelPath, 'getTypeAccount', []),
+
       'style' => [
         base_url('assets/mazer/assets/extensions/simple-datatables/style.css'),
         base_url('assets/css/main.css')
@@ -44,5 +47,19 @@ class Account extends MX_Controller
   {
     $result = requestModel($this->_modelPath, 'accountList', []);
     echo json_encode($result);
+  }
+
+  public function storeAccount()
+  {
+    $send = [
+      'name'       => trim(isset($_POST['name']) ? $_POST['name'] : ''),
+      'idCurrency' => trim(isset($_POST['idCurrency']) ? $_POST['idCurrency'] : ''),
+      'idType'     => trim(isset($_POST['idType']) ? $_POST['idType'] : ''),
+      'amount'     => trim(isset($_POST['amount']) ? $_POST['amount'] : ''),
+      'isActive'   => trim(isset($_POST['isActive']) ? $_POST['isActive'] : '')
+    ];
+
+    $result = requestModel($this->_modelPath, 'storeAccount', $send);
+    echo json_encode($result); 
   }
 }

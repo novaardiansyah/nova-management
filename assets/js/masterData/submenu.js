@@ -396,24 +396,6 @@ function updateData()
   });
 }
 
-function loaderModalForm(idForm, type = 'load')
-{
-  const loaderForm = document.querySelector(`.loader.form-${idForm}`);
-  const form       = document.querySelector(`#form-${idForm}`);
-
-  if (type == 'unload')
-  {
-    loaderForm.style.display = 'none';
-    loaderForm.classList.remove('d-flex');
-
-    form.style.display = 'block';
-    return true;
-  }
-
-  loaderForm.classList.add('d-flex');
-  form.style.display = 'none';
-}
-
 function toggleModal(selector, type = 'show')
 {  
   if (type == 'hide') {

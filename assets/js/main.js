@@ -148,6 +148,7 @@ function formModalReset(idForm = null)
   if (idForm !== null) {
     const form = document.getElementById(idForm);
 
+    // * Hide all invalid feedback
     let invalidFeedback = document.querySelectorAll(`#${idForm} .invalid-feedback`);
     [...invalidFeedback].forEach((element) => {
       element.style.display = 'none';
@@ -160,6 +161,40 @@ function formModalReset(idForm = null)
   [...invalidFeedback].forEach((element) => {
     element.style.display = 'none';
   });
+}
+
+function loaderModalForm(idForm, type = 'unload')
+{
+  const loaderForm = document.querySelector(`.loader.form-${idForm}`);
+  const form       = document.querySelector(`#form-${idForm}`);
+  
+  loaderForm.classList.remove('d-none');
+  form.classList.add('d-none');
+
+  if (type == 'unload') {
+    setTimeout(() => {
+      loaderForm.classList.add('d-none');
+      form.classList.remove('d-none');
+    }, 1000);
+  }
+}
+
+function toggleModal(idModal, type = 'open')
+{
+  const wrapperToggleModal = document.getElementById('wrapper-toggle-modal');
+  let button = '';
+
+  if (type == 'open') {
+    button = `<button type="button" class="btn btn-success btn-sm d-none" data-bs-toggle="modal" data-bs-target="#${idModal}">${type}</button>`;
+  }
+
+  if (type == 'close') {
+    button = `<button type="button" class="btn btn-danger btn-sm d-none" data-bs-dismiss="modal" data-bs-target="#${idModal}">${type}</button>`;
+  }
+
+  wrapperToggleModal.innerHTML = button;
+  let buttonToggle = document.querySelector(`button[data-bs-target="#${idModal}"]`);
+  return buttonToggle.click();
 }
 
 const sweetAlertConfirmDanger = Swal.mixin({

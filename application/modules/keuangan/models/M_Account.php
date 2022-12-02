@@ -23,4 +23,38 @@ class M_Account extends CI_Model
     
     return responseModelTrue('Data tersedia/ditemukan.', ['list' => $result]);
   }
+
+  public function getCurrency()
+  {
+    $result = $this->db->query("SELECT a.id, a.name, a.short, a.country, a.kdCountry, a.isActive FROM finance_currency AS a WHERE a.isDeleted = 0 ORDER BY a.country ASC")->result();
+
+    if (empty($result)) return responseModelFalse('Data tidak tersedia.', 'Q9WDI');
+
+    foreach ($result as $key => $value) 
+    {
+      $result[$key]->id = custom_decode($value->id);
+      $result[$key]->f1_name = $value->country . ' (' . $value->short . ')';
+    }
+
+    return responseModelTrue('Data tersedia / ditemukan.', ['list' => $result]);
+  }
+
+  public function getTypeAccount()
+  {
+    $result = $this->db->query("SELECT a.id, a.name, a.isActive FROM finance_types AS a WHERE a.isDeleted = 0 ORDER BY a.name ASC")->result();
+
+    if (empty($result)) return responseModelFalse('Data tidak tersedia.', 'MZ0JI');
+
+    foreach ($result as $key => $value) 
+    {
+      $result[$key]->id = custom_decode($value->id);
+    }
+
+    return responseModelTrue('Data tersedia / ditemukan.', ['list' => $result]);
+  }
+
+  public function storeAccount()
+  {
+    if (empty($result)) return responseModelFalse('Data tidak tersedia.', 'MZ0JI', $_POST);
+  }
 }
