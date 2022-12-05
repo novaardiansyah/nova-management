@@ -28,15 +28,15 @@ class Account extends MX_Controller
 
       'style' => [
         base_url('assets/mazer/assets/extensions/simple-datatables/style.css'),
-        base_url('assets/css/main.css')
+        base_url('assets/css/main.css?v=' . versionAsset())
       ],
       'script' => [
         base_url('assets/mazer/assets/extensions/simple-datatables/umd/simple-datatables.js'),
-        base_url('assets/js/main.js?v=' . getTimes('now', 'YmdH')),
-        base_url('assets/js/keuangan/index.js?v=' . getTimes('now', 'YmdH')),
-        base_url('assets/js/keuangan/account.js?v=' . getTimes('now', 'YmdH')),
-        base_url('assets/js/keuangan/typeAccount.js?v=' . getTimes('now', 'YmdH')),
-        base_url('assets/js/keuangan/typeCurrency.js?v=' . getTimes('now', 'YmdH'))
+        base_url('assets/js/main.js?v=' . versionAsset()),
+        base_url('assets/js/keuangan/index.js?v=' . versionAsset()),
+        base_url('assets/js/keuangan/account.js?v=' . versionAsset()),
+        // base_url('assets/js/keuangan/typeAccount.js?v=' . getTimes('now', 'YmdH')),
+        // base_url('assets/js/keuangan/typeCurrency.js?v=' . getTimes('now', 'YmdH'))
       ]
     ];
 
@@ -51,15 +51,47 @@ class Account extends MX_Controller
 
   public function storeAccount()
   {
+    $csrf_renewed = $this->security->get_csrf_hash();
+    $validate     = $this->_r_storeAccount();
+
+    if ($validate->run() == false)
+    {
+      echo json_encode(['status' => false, 'message' => 'Validation is invalid.', 'data' => ['csrf_renewed' => $csrf_renewed, 'errors' => $validate->error_array()]]); exit;
+    }
+
+    $logo = upload_file(['field' => 'logo', 'path' => 'assets/images/financeLogo', 'type' => 'image']);
+    
+    if ($logo['status'] == false)
+    {
+      echo json_encode(['status' => false, 'message' => 'Validation is invalid.', 'data' => ['csrf_renewed' => $csrf_renewed, 'errors' => ['logo' => $logo['error']]]]); exit;
+    }
+
+    $idCurrency = trim(isset($_POST['idCurrency']) ? $_POST['idCurrency'] : '');
+    $idCurrency = create_array($idCurrency, ';')[0];
+
     $send = [
       'name'       => trim(isset($_POST['name']) ? $_POST['name'] : ''),
-      'idCurrency' => trim(isset($_POST['idCurrency']) ? $_POST['idCurrency'] : ''),
+      'idCurrency' => $idCurrency,
       'idType'     => trim(isset($_POST['idType']) ? $_POST['idType'] : ''),
       'amount'     => trim(isset($_POST['amount']) ? $_POST['amount'] : ''),
+      'logo'       => $logo['file_name'],
       'isActive'   => trim(isset($_POST['isActive']) ? $_POST['isActive'] : '')
     ];
 
     $result = requestModel($this->_modelPath, 'storeAccount', $send);
     echo json_encode($result); 
+  }
+
+  private function _r_storeAccount()
+  {
+    $rules = [
+      ['field' => 'name', 'label' => 'Name', 'rules' => 'required|trim|max_length[120]'],
+      ['field' => 'idCurrency', 'label' => 'Currency', 'rules' => 'required|trim|max_length[120]'],
+      ['field' => 'idType', 'label' => 'Type', 'rules' => 'required|trim|max_length[120]'],
+      ['field' => 'amount', 'label' => 'Amount', 'rules' => 'required|trim|numeric|min_length[1]|max_length[10]|greater_than[-1]'],
+      ['field' => 'isActive', 'label' => 'Status', 'rules' => 'required|trim|numeric|max_length[1]']
+    ];
+
+    return $this->form_validation->set_rules($rules);
   }
 }

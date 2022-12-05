@@ -2,7 +2,7 @@ const typeCurrencyListUrl  = base_url('keuangan/account/accountList');
 const wrap_typeCurrencyList = document.querySelector('.card-body.typeCurrencyList');
 
 localStorage.setItem(typeCurrencyListUrl, wrap_typeCurrencyList.innerHTML);
-typeCurrencyList();
+// typeCurrencyList();
 
 function typeCurrencyList(url = typeCurrencyListUrl)
 {
