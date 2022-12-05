@@ -2,7 +2,7 @@ const typeAccountListUrl = base_url('keuangan/account/accountList');
 const wrap_typeAccount   = document.querySelector('.card-body.typeAccountList');
 
 localStorage.setItem(typeAccountListUrl, wrap_typeAccount.innerHTML);
-typeAccountList();
+// typeAccountList();
 
 function typeAccountList(url = typeAccountListUrl)
 {

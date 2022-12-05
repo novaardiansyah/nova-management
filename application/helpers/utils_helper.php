@@ -306,3 +306,54 @@ function setCustomCookie($name, $value, $expire = null)
 
   return getCustomCookie($name);
 }
+
+function versionAsset()
+{
+  $ci = get_instance();
+  $status_app = $ci->config->item('status_app');
+
+  if ($status_app == 'development') {
+    return getTimes('now', 'YmdHis');
+  }
+
+  return getTimes('now', 'Ymd');
+}
+
+function upload_file($params = [])
+{
+  $ci = get_instance();
+
+  $field = trim(isset($params['field']) ? $params['field'] : '');
+  $path  = trim(isset($params['path']) ? $params['path'] : '');
+  $type  = trim(isset($params['type']) ? $params['type'] : '');
+
+  $file_name = $_FILES[$field]['name'];
+
+  if ($file_name !== null) {
+    $config_video = [
+      'allowed_types'    => 'mp4|mkv',
+      'max_size'         => '5120',
+      'upload_path'      => $path,
+      'file_name'        => getTimes('now', 'YmdHis') . '_' . $file_name
+    ];
+
+    $config_image = [
+      'allowed_types'    => 'jpg|jpeg|png',
+      'max_size'         => '1024',
+      'upload_path'      => $path,
+      'file_name'        => getTimes('now', 'YmdHis') . '_' . $file_name
+    ];
+
+    $ci->load->library('upload');
+
+    if ($type == 'video') {
+      $ci->upload->initialize($config_video);
+    } else {
+      $ci->upload->initialize($config_image);
+    }
+
+    if ($ci->upload->do_upload($field)) return ['status' => true, 'message' => 'Successfully uploaded the file', 'file_name' => trim($ci->upload->data('file_name'))];
+
+    return ['status' => false, 'message' => 'File upload failed, please try again.', 'error' => $ci->upload->display_errors()];
+  }
+}

@@ -28,21 +28,21 @@
           <div class="mb-3 row">
             <label for="a_idCurrency" class="col-sm-2 col-form-label text-end">Currency <span class="text-danger">*</span></label>
             <div class="col-sm">
-              <select class="form-select custom-select autohide-invalid" id="a_idCurrency" name="idCurrency">
+              <select class="form-select custom-select autohide-invalid" id="a_idCurrency" name="idCurrency" default="MzQ=;IDR">
                 <option value="">Please choose value here..</option>
 
                 <?php foreach ($currency AS $row => $value) : ?>
-                  <option value="<?= $value->id; ?>"><?= $value->f1_name; ?></option>
+                  <option value="<?= $value->id . ';' . $value->short; ?>"><?= $value->f1_name; ?></option>
                 <?php endforeach; ?>
               </select>
               <div class="invalid-feedback idCurrency"></div>
             </div>
           </div>
-
+          
           <div class="mb-3 row">
             <label for="a_idType" class="col-sm-2 col-form-label text-end">Type <span class="text-danger">*</span></label>
             <div class="col-sm">
-              <select class="form-select custom-select autohide-invalid" id="a_idType" name="idType">
+              <select class="form-select custom-select autohide-invalid" id="a_idType" name="idType" default="">
                 <option value="">Please choose value here..</option>
 
                 <?php foreach ($typeAccount AS $row => $value) : ?>
@@ -56,7 +56,7 @@
           <div class="mb-3 row">
             <label for="a_amount" class="col-sm-2 col-form-label text-end">Amount <span class="text-danger">*</span></label>
             <div class="col-sm input-group">
-              <span class="input-group-text">$</span>
+              <span class="input-group-text amount">$</span>
               <input type="text" class="form-control autohide-invalid" id="a_amount" name="amount" placeholder="Please enter value here.." maxlength="10" />
               <div class="invalid-feedback amount"></div> 
             </div>

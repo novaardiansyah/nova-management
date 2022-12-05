@@ -148,13 +148,24 @@ function formModalReset(idForm = null)
   if (idForm !== null) {
     const form = document.getElementById(idForm);
 
+    // * Reset form
+    form.reset();
+
     // * Hide all invalid feedback
     let invalidFeedback = document.querySelectorAll(`#${idForm} .invalid-feedback`);
     [...invalidFeedback].forEach((element) => {
       element.style.display = 'none';
     });
 
-    return form.reset();
+    const selectElement = form.querySelectorAll('select');
+    [...selectElement].forEach((element) => {
+      let defaultValue = element.getAttribute('default');
+      if (defaultValue !== null) {
+        element.value = defaultValue;
+      }
+    });
+    
+    return true;
   }
   
   let invalidFeedback = document.querySelectorAll('.invalid-feedback');

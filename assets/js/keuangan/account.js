@@ -35,7 +35,7 @@ function accountList(url = accountListUrl)
               <span class="badge ${parseInt(value.isActive) == 1 ? 'bg-success' : 'bg-danger'}">${parseInt(value.isActive) == 1 ? 'Active' : 'Non-Active'}</span>
             </td>
             <td class="align-middle">
-              <img src="${base_url('assets/images/financeLogo/' + value.logo)}" alt="${value.logo}" class="img-fluid" style="max-width: 100px;" />
+              <img src="${base_url('assets/images/financeLogo/' + value.logo)}" alt="${value.logo}" class="img-fluid img-thumbnail" style="max-width: 100px;" />
             </td>
             <td class="align-middle">
               <button type="button" class="btn btn-primary btn-sm text-nowrap" data-bs-toggle="modal" data-bs-target="#editData" id="editData-show" onclick="return editData('${value.id}')">
@@ -71,13 +71,13 @@ function accountList(url = accountListUrl)
   });
 }
 
-function refresh_accountList(url = accountListUrl, params = {})
+function r_accountList(params = {}, url = accountListUrl)
 {
   const { afterTimeout } = params;
   let defaultTable = localStorage.getItem(url);
 
   if (afterTimeout !== undefined) {
-    let delay = afterTimeout - (afterTimeout * 0.50);
+    let delay = (afterTimeout * 1000) - (afterTimeout * 1000 * 0.50);
 
     setTimeout(() => {
       wrapAccountList.innerHTML = defaultTable;
@@ -94,8 +94,21 @@ function refresh_accountList(url = accountListUrl, params = {})
 // * Add data function (Start) [Nova Ardiansyah - December, 02 2020]
 function addAccount(idModal)
 {
+  const idForm = `form-${idModal}`;
+
   toggleModal(idModal, 'open');
   loaderModalForm(idModal, 'unload');
+  formModalReset(idForm);
+
+  let idCurrency = document.querySelector(`#${idForm} [name="idCurrency"]`);
+  let groupAmount = document.querySelector(`#${idForm} .input-group-text.amount`);
+
+  let currency = '$';
+  if (idCurrency !== null) {
+    currency = idCurrency.value.split(';')[1];
+  }
+
+  return groupAmount.innerHTML = currency;
 }
 
 function storeAccount(idForm)
@@ -109,7 +122,6 @@ function storeAccount(idForm)
   }).then((response) => response.json());
 
   response.then((callback) => {
-    console.log(callback);
     let data = callback.data;
 
     startup.crlf_token = data.csrf_renewed;
@@ -117,7 +129,8 @@ function storeAccount(idForm)
     if (callback.status == true && callback.message !== undefined)
     {
       toggleModal('addAccount', 'close');
-      return toastifyAlert({message: callback.message, timer: 3, close: true});
+      toastifyAlert({message: callback.message, timer: 3, close: true});
+      return r_accountList({afterTimeout: 3});
     }
 
     if (callback.status == false && data.errors !== undefined)
