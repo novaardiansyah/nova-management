@@ -38,7 +38,7 @@ function accountList(url = accountListUrl)
               <img src="${base_url('assets/images/financeLogo/' + value.logo)}" alt="${value.logo}" class="img-fluid img-thumbnail" style="max-width: 100px;" />
             </td>
             <td class="align-middle">
-              <button type="button" class="btn btn-primary btn-sm text-nowrap" data-bs-toggle="modal" data-bs-target="#editData" id="editData-show" onclick="return editData('${value.id}')">
+              <button type="button" class="btn btn-primary btn-sm text-nowrap" onclick="return editAccount('editAccount', '${value.id}')">
                 <i class="bi bi-pencil-square"></i>
                 <span class="d-none d-xl-inline">Edit</span>
               </button>
@@ -67,7 +67,7 @@ function accountList(url = accountListUrl)
       return toastifyAlert({message: callback.message, color: 'danger', timer: 5});
     }
     
-    return toastifyAlert({message: 'Terjadi kesalahan internal, silahkan coba lagi (DY2GA).', color: 'danger', timer: 5, close: false});;
+    return toastifyAlert({message: 'Terjadi kesalahan internal, silahkan coba lagi (DY2GA).', color: 'danger', timer: 5, close: false});
   });
 }
 
@@ -112,8 +112,15 @@ function addAccount(idModal)
   loaderModalForm(idModal, 'unload');
   formModalReset(idForm);
 
-  let idCurrency = document.querySelector(`#${idForm} [name="idCurrency"]`);
-  let groupAmount = document.querySelector(`#${idForm} .input-group-text.amount`);
+  const togglePreviews = formAddAccount.querySelectorAll('.toggle-preview');
+  Object.entries(togglePreviews).forEach(([key, value]) => {
+    if (value.classList.contains('d-none') == false) {
+      value.classList.add('d-none');
+    }
+  });
+
+  let idCurrency  = formAddAccount.querySelector(`[name="idCurrency"]`);
+  let groupAmount = formAddAccount.querySelector(`.input-group-text.amount`);
 
   let currency = '$';
   if (idCurrency !== null) {
@@ -166,6 +173,128 @@ function storeAccount(idForm)
   });
 }
 // * Add data function (End)
+
+// * Edit data function (Start)
+const formEditAccount = document.getElementById('form-editAccount');
+
+formEditAccount.querySelector('[name="idCurrency"]').addEventListener('change', function() {
+  let currency = this.value.split(';')[1];
+
+  if (currency == undefined) {
+    currency = '$'; 
+  }
+
+  return formEditAccount.querySelector('.input-group-text.amount').innerHTML = currency;
+});
+
+function editAccount(idModal, _id)
+{
+  const idForm = `form-${idModal}`;
+  
+  toggleModal(idModal, 'open');
+  loaderModalForm(idModal, 'unload');
+  formModalReset(idForm);
+
+  const formData = new FormData();
+  formData.append(startup.crlf_name, startup.crlf_token);
+  formData.append('_id', _id);
+
+  let response = fetch(`${base_url('keuangan/account/editAccount')}`, {
+    method: 'POST',
+    body: formData
+  }).then((response) => response.json());
+
+  response.then((callback) => {
+    if (callback.status == true && callback.message !== undefined)
+    {
+      let data = callback.data;
+      
+      startup.crlf_token = data.csrf_renewed;
+
+      formEditAccount.querySelector('[name="name"]').value          = data.name;
+      formEditAccount.querySelector('[name="idCurrency"]').value    = data.idCurrency + ';' + data.short_finance_currency;
+      formEditAccount.querySelector('[name="idType"]').value        = data.idType;
+      formEditAccount.querySelector('[name="amount"]').value        = data.amount;
+      formEditAccount.querySelector('.toggle-preview.logo img').src = base_url('assets/images/financeLogo/' + data.logo);
+      
+      const status = formEditAccount.querySelectorAll('[name="isActive"]');
+      Object.entries(status).forEach(([key, value]) => {
+        value.checked = false;
+        if (value.value == data.isActive) {
+          value.checked = true;
+        }
+      });
+
+      let idCurrency  = formEditAccount.querySelector(`[name="idCurrency"]`);
+      let groupAmount = formEditAccount.querySelector(`.input-group-text.amount`);
+      
+      let currency = '$';
+      if (idCurrency !== null) {
+        currency = idCurrency.value.split(';')[1];
+      }
+      
+      groupAmount.innerHTML = currency;
+
+      const modalFooter = document.querySelector(`.editAccount.modal-footer`);
+      modalFooter.innerHTML = `<button type="button" class="btn btn-sm btn-secondary" onclick="return toggleModal('editAccount', 'close')">Close</button>  
+        <button type="button" class="btn btn-sm btn-primary" onclick="return updateAccount('editAccount', '${data.id}')">Save</button>`;
+
+      return true;
+    }
+
+    if (callback.status == false && callback.message !== undefined)
+    {
+      return toastifyAlert({message: callback.message, color: 'danger', timer: 5});
+    }
+
+    return toastifyAlert({message: 'Terjadi kesalahan internal, silahkan coba lagi (TDX7M).', color: 'danger', timer: 5, close: false});
+  });
+}
+
+function updateAccount(idModal, _id)
+{
+  const { form, url, method, formData } = setupForm(`form-${idModal}`, 'formData');
+  formData.append(startup.crlf_name, startup.crlf_token);
+  formData.append('_id', _id);
+
+  let response = fetch(url, {
+    method: method,
+    body: formData
+  }).then((response) => response.json());
+
+  response.then((callback) => {
+    let data = callback.data;
+    
+    startup.crlf_token = data.csrf_renewed;
+
+    if (callback.status == true && callback.message !== undefined)
+    {
+      toggleModal('editAccount', 'close');
+      toastifyAlert({message: callback.message, timer: 3, close: true});
+      return r_accountList({afterTimeout: 3});
+    }
+
+    if (callback.status == false && data.errors !== undefined)
+    {      
+      Object.entries(data.errors).forEach(([key, value]) => {
+        let invalidFeedback = form.querySelector(`.invalid-feedback.${key}`);
+        
+        invalidFeedback.innerHTML     = stripHtml(value);
+        invalidFeedback.style.display = 'inline-block';
+      });
+
+      return false;
+    }
+
+    if (callback.status == false && callback.message !== undefined)
+    {
+      return toastifyAlert({message: callback.message, color: 'danger', timer: 3, close: true});
+    }
+    
+    return toastifyAlert({message: 'Terjadi kesalahan, silahkan muat ulang halaman ini (CCXGY).', color: 'danger', timer: 3, close: true});
+  });
+}
+// * Edit data function (End)
 
 // * Delete data function (Start)
 function deleteAccount(_id)

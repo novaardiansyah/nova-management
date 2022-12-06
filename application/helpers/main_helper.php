@@ -98,7 +98,7 @@ function responseModelTrue($message, $data = [], $responseType = 'normal')
 {
   $ci = get_instance();
 
-  $data = array_merge($data, ['csrf_renewed' => $ci->security->get_csrf_hash()]);
+  $data = array_merge((array) $data, ['csrf_renewed' => $ci->security->get_csrf_hash()]);
 
   $response = [
     'status'  => true,
