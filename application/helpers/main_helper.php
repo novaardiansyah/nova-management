@@ -52,7 +52,7 @@ function insertAuditlog($data = [])
   return ['status' => true, 'message' => 'Berhasil merekam data ke auditlog.', 'data' => $send];
 }
 
-function requestModel($modelPath, $function, $data = [])
+function requestModel($modelPath, $function, $data = [], $responseType = 'normal')
 {
   $ci = get_instance();
   $ci->load->model($modelPath, 'model');
@@ -66,6 +66,7 @@ function requestModel($modelPath, $function, $data = [])
     'idRole'       => isset($user->idRole) ? $user->idRole : 0,
     'username'     => isset($user->username) ? $user->username : '',
     'email'        => isset($user->email) ? $user->email : '',
+    'responseType' => $responseType
   ];
 
   $send    = array_merge($send, $data);
@@ -74,7 +75,7 @@ function requestModel($modelPath, $function, $data = [])
   return $request;
 }
 
-function responseModelFalse($message, $error, $data = [])
+function responseModelFalse($message, $error, $data = [], $responseType = 'normal')
 {
   $ci = get_instance();
 
@@ -86,10 +87,14 @@ function responseModelFalse($message, $error, $data = [])
     'data'    => $data
   ];
 
+  if ($responseType == 'object') {
+    return arrayToObject($response);
+  }
+
   return $response;
 }
 
-function responseModelTrue($message, $data = [])
+function responseModelTrue($message, $data = [], $responseType = 'normal')
 {
   $ci = get_instance();
 
@@ -100,6 +105,10 @@ function responseModelTrue($message, $data = [])
     'message' => $message,
     'data'    => $data
   ];
+
+  if ($responseType == 'object') {
+    return arrayToObject($response);
+  }
 
   return $response;
 }
