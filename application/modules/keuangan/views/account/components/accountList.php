@@ -36,4 +36,4 @@
 </section>
 
 <?php $this->load->view('keuangan/account/modal/addAccount'); ?>
-<!-- <?php $this->load->view('masterData/menu/modal/edit'); ?> -->
+<?php $this->load->view('keuangan/account/modal/editAccount'); ?>

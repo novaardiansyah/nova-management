@@ -95,6 +95,81 @@ class Account extends MX_Controller
     return $this->form_validation->set_rules($rules);
   }
 
+  public function editAccount()
+  {
+    $_id    = trim(isset($_POST['_id']) ? $_POST['_id'] : '');
+    $result = requestModel($this->_modelPath, 'editAccount', ['_id' => $_id], 'object');
+    echo json_encode($result);
+  }
+
+  public function updateAccount()
+  {
+    $csrf_renewed = $this->security->get_csrf_hash();
+    $validate     = $this->_r_updateAccount();
+
+    if ($validate->run() == false)
+    {
+      echo json_encode(['status' => false, 'message' => 'Validation is invalid.', 'data' => ['csrf_renewed' => $csrf_renewed, 'errors' => $validate->error_array()]]); exit;
+    }
+
+
+    $isUploadLogo = $_FILES['logo']['name'] !== '' ? true : false;
+
+    if ($isUploadLogo == true)
+    {
+      $logo = upload_file(['field' => 'logo', 'path' => 'assets/images/financeLogo', 'type' => 'image']);
+      
+      if ($logo['status'] == false)
+      {
+        echo json_encode(['status' => false, 'message' => 'Validation is invalid.', 'data' => ['csrf_renewed' => $csrf_renewed, 'errors' => ['logo' => $logo['error']]]]); exit;
+      }
+    }
+
+
+    $idCurrency = trim(isset($_POST['idCurrency']) ? $_POST['idCurrency'] : '');
+    $idCurrency = create_array($idCurrency, ';')[0];
+
+    $send = [
+      '_id'        => trim(isset($_POST['_id']) ? $_POST['_id'] : ''),
+      'name'       => trim(isset($_POST['name']) ? $_POST['name'] : ''),
+      'idCurrency' => $idCurrency,
+      'idType'     => trim(isset($_POST['idType']) ? $_POST['idType'] : ''),
+      'amount'     => trim(isset($_POST['amount']) ? $_POST['amount'] : ''),
+      'logo'       => $isUploadLogo ? $logo['file_name'] : '',
+      'isActive'   => trim(isset($_POST['isActive']) ? $_POST['isActive'] : '')
+    ];
+
+    $result = requestModel($this->_modelPath, 'updateAccount', $send, 'object');
+
+    if ($result->status == TRUE)
+    {
+      $data = $result->data;
+
+      if (file_exists(FCPATH . 'assets/images/financeLogo/' . $data->oldLogo))
+      {
+        if ($data->oldLogo !== 'default-logo-finance.png')
+        {
+          unlink(FCPATH . 'assets/images/financeLogo/' . $data->oldLogo);
+        }
+      }
+    }
+
+    echo json_encode($result);
+  }
+
+  private function _r_updateAccount()
+  {
+    $rules = [
+      ['field' => 'name', 'label' => 'Name', 'rules' => 'required|trim|max_length[120]'],
+      ['field' => 'idCurrency', 'label' => 'Currency', 'rules' => 'required|trim|max_length[120]'],
+      ['field' => 'idType', 'label' => 'Type', 'rules' => 'required|trim|max_length[120]'],
+      ['field' => 'amount', 'label' => 'Amount', 'rules' => 'required|trim|numeric|min_length[1]|max_length[10]|greater_than[-1]'],
+      ['field' => 'isActive', 'label' => 'Status', 'rules' => 'required|trim|numeric|max_length[1]']
+    ];
+
+    return $this->form_validation->set_rules($rules);
+  }
+
   public function deleteAccount()
   {
     $_id = trim(isset($_POST['_id']) ? $_POST['_id'] : '');
