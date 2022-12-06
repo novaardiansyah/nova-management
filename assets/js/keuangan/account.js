@@ -48,7 +48,7 @@ function accountList(url = accountListUrl)
                 <span class="d-none d-xl-inline">Detail</span>
               </button>
 
-              <button type="button" class="btn btn-danger btn-sm text-nowrap" onclick="return deleteData('${value.id}')">
+              <button type="button" class="btn btn-danger btn-sm text-nowrap" onclick="return deleteAccount('${value.id}')">
                 <i class="bi bi-x-square"></i>
                 <span class="d-none d-xl-inline">Delete</span>
               </button>
@@ -92,6 +92,18 @@ function r_accountList(params = {}, url = accountListUrl)
 }
 
 // * Add data function (Start) [Nova Ardiansyah - December, 02 2020]
+const formAddAccount = document.getElementById('form-addAccount');
+
+formAddAccount.querySelector('[name="idCurrency"]').addEventListener('change', function() {
+  let currency = this.value.split(';')[1];
+
+  if (currency == undefined) {
+    currency = '$'; 
+  }
+
+  return formAddAccount.querySelector('.input-group-text.amount').innerHTML = currency;
+});
+
 function addAccount(idModal)
 {
   const idForm = `form-${idModal}`;
@@ -154,3 +166,52 @@ function storeAccount(idForm)
   });
 }
 // * Add data function (End)
+
+// * Delete data function (Start)
+function deleteAccount(_id)
+{
+  sweetAlertConfirmDanger.fire({
+    text: 'Apakah anda yakin?',
+    icon: 'warning',
+    showCancelButton: true,
+    reverseButtons: true,
+    confirmButtonText: 'Lanjutkan',
+    cancelButtonText: 'Batal'
+  })
+    .then((confirm) => {
+      if (confirm.isConfirmed == true)
+      {
+        const formData = new FormData();
+        formData.append(startup.crlf_name, startup.crlf_token);
+        formData.append('_id', _id);
+
+        let url = base_url('keuangan/account/deleteAccount');
+
+        let response = fetch(url, {
+          method: 'POST',
+          body: formData
+        }).then((response) => response.json());
+        
+        response.then((callback) => {
+          let data = callback.data;
+          console.log(callback);
+
+          startup.crlf_token = data.csrf_renewed;
+
+          if (callback.status == true && callback.message !== undefined)
+          {
+            toastifyAlert({message: callback.message, timer: 3, close: true});
+            return r_accountList({afterTimeout: 3});
+          }
+
+          if (callback.status == false && callback.message !== undefined) 
+          {
+            return toastifyAlert({message: callback.message, color: 'danger', timer: 3, close: true});
+          }
+
+          return toastifyAlert({message: 'Terjadi kesalahan, silahkan muat ulang halaman ini (4IIT2).', color: 'danger', timer: 3, close: true});
+        });
+      }
+    })
+}
+// * Delete data function (End)

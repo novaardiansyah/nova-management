@@ -275,3 +275,46 @@ function toastifyAlert(params = {})
     style: style
   }).showToast();
 }
+
+// * Live Preview Image (Start)
+const imagePreviews = document.querySelectorAll('input[type="file"].image-preview');
+
+if (imagePreviews !== null) {
+  imagePreviews.forEach((element) => {
+    element.addEventListener('change', function() {
+      let name     = element.getAttribute('name');
+      let form     = element.closest('form');
+      let file     = this.files[0];
+      let ekstensi = file.name.split(".").pop();
+      
+      ekstensi = ekstensi.toLowerCase();
+      
+      if (ekstensi !== "jpg" && ekstensi !== "jpeg" && ekstensi !== "png") {
+        form.querySelector(`.${name}.toggle-preview`).classList.add('d-none');
+        return toastifyAlert({message: 'File yang anda upload tidak valid.', color: 'danger', timer: 3, close: true});
+      }
+
+      let reader = new FileReader();
+        
+      reader.onload = function () {
+        form.querySelector(`.${name}.toggle-preview`).classList.remove('d-none');
+        form.querySelector(`.${name}.toggle-preview > img`).setAttribute('src', reader.result);
+      };
+      
+      reader.readAsDataURL(file);
+      return toastifyAlert({message: 'File anda valid, silahkan lanjutkan.', timer: 3, close: false});
+    });
+  });
+}
+// * Live Preview Image (End)
+
+function onlyNumber(event)
+{
+  let key = event.which || event.keyCode;
+
+  if (key >= 48 && key <= 57) {
+    return true;
+  } else {
+    return false;
+  }
+}

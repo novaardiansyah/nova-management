@@ -57,7 +57,7 @@
             <label for="a_amount" class="col-sm-2 col-form-label text-end">Amount <span class="text-danger">*</span></label>
             <div class="col-sm input-group">
               <span class="input-group-text amount">$</span>
-              <input type="text" class="form-control autohide-invalid" id="a_amount" name="amount" placeholder="Please enter value here.." maxlength="10" />
+              <input type="text" class="form-control autohide-invalid" id="a_amount" name="amount" placeholder="Please enter value here.." maxlength="10" onkeypress="return onlyNumber(event)" />
               <div class="invalid-feedback amount"></div> 
             </div>
           </div>
@@ -65,8 +65,12 @@
           <div class="mb-3 row">
             <label for="a_logo" class="col-sm-2 col-form-label text-end">Logo <span class="text-danger">*</span></label>
             <div class="col-sm">
-              <input type="file" class="form-control autohide-invalid" id="a_logo" name="logo" accept=".jpg, .jpeg, .png" placeholder="Please enter value here.." />
+              <input type="file" class="form-control image-preview autohide-invalid" id="a_logo" name="logo" accept=".jpg, .jpeg, .png" placeholder="Please enter value here.." />
               <div class="invalid-feedback logo"></div>
+              
+              <div class="toggle-preview mt-2 d-none logo">
+                <img src="<?= base_url('assets/images/financeLogo/default-logo-finance.png'); ?>" alt="preview" class="img-fluid img-thumbnail" style="max-width: 120px;" />
+              </div>
             </div>
           </div>
 

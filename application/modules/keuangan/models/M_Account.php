@@ -12,12 +12,13 @@ class M_Account extends CI_Model
   {
     $result = $this->db->query("SELECT a.id, a.idCurrency, a.idType, a.name, a.amount, a.logo, a.isActive, a.isDeleted, a.created_at, a.updated_at, b.name AS name_finance_types, c.name AS name_finance_currency, c.short AS short_finance_currency, c.country, c.kdCountry FROM finance_account AS a
     INNER JOIN finance_types AS b ON a.idType = b.id
-    INNER JOIN finance_currency AS c ON a.idCurrency = c.id")->result();
+    INNER JOIN finance_currency AS c ON a.idCurrency = c.id WHERE a.isDeleted = 0")->result();
     
     if (empty($result)) return responseModelFalse('Data tidak tersedia/ditemukan.', 'KFTVH');
 
     foreach ($result as $key => $value) 
     {
+      $result[$key]->id = custom_encode($value->id);
       $result[$key]->f1_amount = $value->short_finance_currency . '. ' . number_format($value->amount, 2, ',', '.');
     }
     
@@ -95,8 +96,29 @@ class M_Account extends CI_Model
     $result->idCurrency = $_idCurrency;
     $result->idType     = $_idType;
 
-    insertAuditlog(['idUser' => $idUser, 'idRole' => $idRole, 'idType' => 1, 'description' => "Berhasil menambah data akun keuangan baru dengan nama '$name'. -- $result->id"]);
+    insertAuditlog(['idUser' => $idUser, 'idRole' => $idRole, 'idType' => 5, 'description' => "Berhasil menambah data akun keuangan baru dengan nama '$name'. -- $result->id"]);
     
     return responseModelTrue('Data berhasil ditambahkan.', ['list' => $result]);
+  }
+
+  public function deleteAccount($data = [])
+  {
+    // * Auditlog Data (Start)
+    $idUser       = trim(isset($data['idUser']) ? custom_decode($data['idUser']) : '');
+    $idRole       = trim(isset($data['idRole']) ? custom_decode($data['idRole']) : '');
+    $responseType = trim(isset($data['responseType']) ? $data['responseType'] : '');
+    // * Auditlog Data (End)
+
+    $_id = trim(isset($data['_id']) ? $data['_id'] : '');
+    $id  = custom_decode($_id);
+
+    $result = $this->db->query("SELECT a.id, a.name, a.amount, a.logo, a.isActive, a.isDeleted, a.created_at, a.updated_at FROM finance_account AS a WHERE a.id = '$id'")->row();
+    if (empty($result)) return responseModelFalse('Data gagal ditambahkan, silahkan coba lagi.', '4IIT2', $data, $responseType);
+
+    $this->db->update('finance_account', ['isDeleted' => 1, 'deleted_at' => getTimes('now'), 'deleted_by' => $idUser], ['id' => $id]);
+    insertAuditlog(['idUser' => $idUser, 'idRole' => $idRole, 'idType' => 7, 'description' => "Berhasil menghapus data akun keuangan dengan nama '$result->name'. -- $_id"]);
+
+    $result->id = $_id;
+    return responseModelTrue('Berhasil menghapus data keuangan..', ['list' => $result], $responseType);
   }
 }

@@ -79,7 +79,7 @@ class Account extends MX_Controller
     ];
 
     $result = requestModel($this->_modelPath, 'storeAccount', $send);
-    echo json_encode($result); 
+    echo json_encode($result);
   }
 
   private function _r_storeAccount()
@@ -93,5 +93,26 @@ class Account extends MX_Controller
     ];
 
     return $this->form_validation->set_rules($rules);
+  }
+
+  public function deleteAccount()
+  {
+    $_id = trim(isset($_POST['_id']) ? $_POST['_id'] : '');
+    $result = requestModel($this->_modelPath, 'deleteAccount', ['_id' => $_id], 'object');
+
+    if ($result->status == TRUE)
+    {
+      $data = $result->data->list;
+
+      if (file_exists(FCPATH . 'assets/images/financeLogo/' . $data->logo))
+      {
+        if ($data->logo !== 'default-logo-finance.png')
+        {
+          unlink(FCPATH . 'assets/images/financeLogo/' . $data->logo);
+        }
+      }
+    }
+
+    echo json_encode($result);
   }
 }
