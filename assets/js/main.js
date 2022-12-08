@@ -42,11 +42,6 @@ function adaptPagination(dataTable) {
 function initDataTables(idTable)
 {
   const table = document.getElementById(idTable);
-  let loaderTable = document.getElementById('loader-table');
-
-  if (loaderTable == null) {
-    loaderTable = document.querySelector(`.loader-table.${idTable}`);
-  }
 
   let dataTable = new simpleDatatables.DataTable(table);
   dataTable.on("datatable.page", adaptPagination);
@@ -54,19 +49,37 @@ function initDataTables(idTable)
   adaptPageDropdown(dataTable);
   adaptPagination(dataTable);
 
-  loaderTable.style.display = 'none';
-  loaderTable.classList.remove('d-flex');
+  return AvailableInTable(idTable);
 }
 
 function toggleLoader(idLoader, action = 'hide')
 {
-  const loader = document.getElementById(idLoader);
+  let loader = document.getElementById(idLoader);
+
+  if (loader == null) {
+    loader = document.querySelector(idLoader);
+  }
 
   if (action == 'hide')
   {
     loader.style.display = 'none';
     loader.classList.remove('d-flex');
   }
+}
+
+function noDataInTable(tableId)
+{
+  const loaderTable = document.querySelector(`.loader-table.${tableId}`);
+  loaderTable.classList.add('d-none');
+
+  const noDataImage = document.querySelector(`.no-data-table.${tableId}`);
+  noDataImage.classList.remove('d-none');
+}
+
+function AvailableInTable(tableId)
+{
+  const loaderTable = document.querySelector(`.loader-table.${tableId}`);
+  loaderTable.classList.add('d-none');
 }
 
 function denied_specialchar(string) {
