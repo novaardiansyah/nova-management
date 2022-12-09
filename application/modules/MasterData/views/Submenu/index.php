@@ -24,10 +24,16 @@
         </tbody>
       </table>
 
-      <div class="d-flex justify-content-center align-items-center" id="loader-table">
+      <!-- Loader (Start) -->
+      <div class="d-flex justify-content-center align-items-center loader-table submenuList">
         <img src="<?= base_url('assets/mazer/assets/images/svg-loaders/audio.svg'); ?>" alt="loader" class="img-fluid me-2" style="max-width: 200px;" />  
         <img src="<?= base_url('assets/mazer/assets/images/svg-loaders/audio.svg'); ?>" alt="loader" class="img-fluid" style="max-width: 200px;" />         
       </div>
+
+      <div class="d-flex d-none justify-content-center align-items-center no-data-table submenuList">
+        <img src="<?= base_url('assets/images/admin/table-no-data-found.gif'); ?>" alt="no-data-found" class="img-fluid me-2" style="max-width: 350px;" />  
+      </div>
+      <!-- Loader (End) -->
     </div>
   </div>
 </section>

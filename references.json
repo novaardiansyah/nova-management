@@ -1,5 +1,11 @@
 {
-  "related-information": {},
+  "related-information": {
+    "composer-install": {
+      "command": "composer install",
+      "description": "Install dependencies from composer.lock",
+      "url": "https://getcomposer.org/doc/03-cli.md#install"
+    }
+  },
   "search-information": {
     "issues": [
       {

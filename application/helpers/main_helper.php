@@ -112,3 +112,53 @@ function responseModelTrue($message, $data = [], $responseType = 'normal')
 
   return $response;
 }
+
+function api_url($path = '')
+{
+  $ci = get_instance();
+  $url = $ci->config->item('api_url');
+
+  return $url . '/' . $path;
+}
+
+function requestApi($url, $method = 'GET', $data = [])
+{
+  $ci = get_instance();
+
+  $user = getSession('user');
+  $user = $user ? arrayToObject($user) : [];
+
+  $send = [
+    'csrf_renewed' => $ci->security->get_csrf_hash(),
+    'log_idUser'   => isset($user->id) ? $user->id : 0,
+    'log_idRole'   => isset($user->idRole) ? $user->idRole : 0,
+    'log_username' => isset($user->username) ? $user->username : '',
+    'log_email'    => isset($user->email) ? $user->email : ''
+  ];
+  $data = array_merge($data, $send);
+
+  $curl = curl_init();
+
+  $params = [
+    CURLOPT_URL            => $url,
+    CURLOPT_RETURNTRANSFER => true,
+    CURLOPT_ENCODING       => '',
+    CURLOPT_MAXREDIRS      => 10,
+    CURLOPT_TIMEOUT        => 0,
+    CURLOPT_FOLLOWLOCATION => true,
+    CURLOPT_HTTP_VERSION   => CURL_HTTP_VERSION_1_1,
+    CURLOPT_CUSTOMREQUEST  => $method
+  ];
+
+  if ($method == 'POST') {
+    $params[CURLOPT_POSTFIELDS] = $data;
+  }
+
+  curl_setopt_array($curl, $params);
+
+  $response = curl_exec($curl);
+  $response = json_decode($response, FALSE);
+  curl_close($curl);
+
+  return $response;
+}

@@ -40,7 +40,7 @@ class ContactUs extends MX_Controller
 
   public function contactUsList()
   {
-    $result = requestModel($this->_modelPath, 'contactUsList', []);
+    $result = requestApi(api_url('CustomerService/contactUsList'), 'POST');
     echo json_encode($result);
   }
 
@@ -48,7 +48,7 @@ class ContactUs extends MX_Controller
   {
     $csrf_renewed = $this->security->get_csrf_hash();
     $validate     = $this->_r_storeContactUs();
-
+    
     if ($validate->run() == false)
     {
       echo json_encode(['status' => false, 'message' => 'Validation is invalid.', 'data' => ['csrf_renewed' => $csrf_renewed, 'errors' => $validate->error_array()]]); exit;
@@ -62,7 +62,7 @@ class ContactUs extends MX_Controller
       'isActive' => trim(isset($_POST['isActive']) ? $_POST['isActive'] : '')
     ];
 
-    $result = requestModel($this->_modelPath, 'storeContactUs', $send);
+    $result = requestApi(api_url('CustomerService/storeContactUs'), 'POST', $send);
     echo json_encode($result);
   }
 
