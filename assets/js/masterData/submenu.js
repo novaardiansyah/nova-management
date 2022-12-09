@@ -61,33 +61,12 @@ function submenuList(url = defaultUrl)
 
     if (callback.status == false && callback.message !== undefined)
     {
-      Toastify({
-        text: stripHtml(callback.message),
-        duration: 5000,
-        close: true,
-        style: {
-          background: startup.colors.danger,
-        }
-      }).showToast();
-
-      return false;
+      noDataInTable('submenuList');
+      return toastifyAlert({message: callback.message, color: 'danger', timer: 5});
     }
-
-    return false;
-  })
-    .catch((error) => {
-      Toastify({
-        text: 'Terjadi Kesalahan Internal (2CBS3J).',
-        duration: 5000,
-        close: true,
-        style: {
-          background: startup.colors.danger,
-        }
-      }).showToast();
-      console.log(error);
-
-      return false;
-    });
+    
+    return toastifyAlert({message: 'Terjadi kesalahan internal, silahkan coba lagi (DY2GA).', color: 'danger', timer: 5, close: false});
+  });
 }
 
 function refreshList(url = defaultUrl, params = {})
