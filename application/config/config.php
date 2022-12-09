@@ -27,6 +27,9 @@ $config['base_url'] = ((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == "on") ?
 $config['base_url'] .= "://" . $_SERVER['HTTP_HOST'];
 $config['base_url'] .= str_replace(basename($_SERVER['SCRIPT_NAME']), "", $_SERVER['SCRIPT_NAME']);
 
+$config['api_url'] = ((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == "on") ? "https" : "http");
+$config['api_url'] .= "://" . $_SERVER['HTTP_HOST'] . '/nova-management-api/v1';
+
 $config['encrypt_key']       = '85aaac43-bbf3-4dd4-9361-d165415b30d6';
 $config['secret_key']        = 'cb13331d-829c-499f-8089-b301befe3e83';
 $config['authorization_key'] = '94c8f165-73ed-4940-990e-e645e2f4831b';
@@ -147,7 +150,7 @@ $config['subclass_prefix'] = 'MY_';
 | Note: This will NOT disable or override the CodeIgniter-specific
 |	autoloading (application/config/autoload.php)
 */
-$config['composer_autoload'] = TRUE;
+$config['composer_autoload'] = FCPATH . 'vendor/autoload.php';
 
 /*
 |--------------------------------------------------------------------------
