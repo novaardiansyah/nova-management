@@ -3,12 +3,13 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
 class ContactUs extends MX_Controller
 {
-  public $_modelPath;
+  public $_modelPath, $_corePath;
 
   public function __construct()
   {
     parent::__construct();
     $this->_modelPath = 'M_ContactUs';
+    $this->_corePath = 'M_Core';
   }
 
   public function index()
@@ -53,7 +54,7 @@ class ContactUs extends MX_Controller
     {
       echo json_encode(['status' => false, 'message' => 'Validation is invalid.', 'data' => ['csrf_renewed' => $csrf_renewed, 'errors' => $validate->error_array()]]); exit;
     }
-
+    
     $send = [
       'name'     => trim(isset($_POST['name']) ? $_POST['name'] : ''),
       'email'    => trim(isset($_POST['email']) ? $_POST['email'] : ''),

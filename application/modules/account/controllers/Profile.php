@@ -9,7 +9,7 @@ class Profile extends MX_Controller
     $this->load->model('M_Profile', 'profile');
   }
 
-    public function index()
+  public function index()
   {
     $this->load->helper('auth_helper');
     isLogin();
@@ -28,7 +28,7 @@ class Profile extends MX_Controller
         base_url('assets/js/main.js'),
       ]
     ];
-
+    
     backend_layout('profile/index', $data);
   }
 }

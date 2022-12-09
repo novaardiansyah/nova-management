@@ -111,7 +111,7 @@ function storeContactUs(idModal)
 
   response.then((callback) => {
     let data = callback.data;
-    
+    console.log(callback);
     startup.crlf_token = data.csrf_renewed;
 
     if (callback.status == true && callback.message !== undefined)
