@@ -136,7 +136,7 @@ function requestApi($url, $method = 'GET', $data = [])
     'log_email'    => isset($user->email) ? $user->email : ''
   ];
   $data = array_merge($data, $send);
-
+  
   $curl = curl_init();
 
   $params = [
@@ -158,6 +158,7 @@ function requestApi($url, $method = 'GET', $data = [])
 
   $response = curl_exec($curl);
   $response = json_decode($response, FALSE);
+  
   curl_close($curl);
 
   return $response;

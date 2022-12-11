@@ -88,12 +88,11 @@ class Auth extends MX_Controller
     }
 
     $send = [
-      'csrf_renewed' => $csrf_renewed,
-      'username'     => trim(isset($_POST['username']) ? $_POST['username'] : ''),
-      '_password'    => trim(isset($_POST['password']) ? $_POST['password'] : '')
+      'username' => trim(isset($_POST['username']) ? $_POST['username'] : ''),
+      'password' => trim(isset($_POST['password']) ? $_POST['password'] : '')
     ];
 
-    $result = $this->auth->validateLogin($send);
+    $result = requestApi(api_url('auth/login'), 'POST', $send);
     $result = arrayToObject($result);
 
     if ($result->status == true)
