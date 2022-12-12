@@ -5,36 +5,30 @@ function isLogin($data = [])
 {
   $ci = get_instance();
   $ci->load->model('M_Main', 'main');
-  $redirect = 'auth';
 
   if (isset($data['redirect'])) $redirect = $data['redirect'];
 
-  $csrf_renewed = $ci->security->get_csrf_hash();
-  $tokens       = getCustomCookie('token-login');
+  $loginToken   = getCustomCookie('login-token');
+  $accessToken  = getCustomCookie('access-token');
 
-  if (!isset($tokens)) 
+  if (!isset($loginToken) || !isset($accessToken)) 
   {
     if (isset($data['checkAlreadyLogin']) && $data['checkAlreadyLogin'] == true) return true;
-    return invalidLogin($redirect);
+    return invalidLogin();
   }
   
   // * Tokens : token;idUser;idType;expired_at
-  $tokens = create_array($tokens, ';');
-
-  $s_token = [
-    'token'        => isset($tokens[0]) ? $tokens[0] : '',
-    'idUser'       => isset($tokens[1]) ? $tokens[1] : '',
-    'idType'       => isset($tokens[2]) ? $tokens[2] : '',
-    'csrf_renewed' => $csrf_renewed
+  $loginToken  = create_array($loginToken, ';');
+  $accessToken = create_array($accessToken, ';');
+  
+  $send = [
+    'loginToken'  => isset($loginToken[0]) ? $loginToken[0] : '',
+    'accessToken' => isset($accessToken[0]) ? $accessToken[0] : ''
   ];
-
-  $validateTokenLogin = $ci->main->validateTokenLogin($s_token);
-  $validateTokenLogin = arrayToObject($validateTokenLogin);
-
-  if (!$validateTokenLogin->status) return invalidLogin($redirect);
-
-  setSession(['user' => $validateTokenLogin->data->user, 'isLogin' => true]);
-
+  
+  $validateTokenLogin = requestApi(api_url(('auth/validateTokens')), 'POST', $send);
+  
+  if (!$validateTokenLogin->status) return invalidLogin();
   if (isset($data['checkAlreadyLogin']) && $data['checkAlreadyLogin'] == true) return redirect($redirect);
 
   return $validateTokenLogin;
@@ -45,9 +39,10 @@ function isAlreadyLogin()
   return isLogin(['redirect' => 'main', 'checkAlreadyLogin' => true]);
 }
 
-function invalidLogin($redirect = 'auth')
+function invalidLogin()
 {
   destroySession(['user', 'isLogin']);
-  setCustomCookie('token-login', '', null);
-  return redirect($redirect);
+  setCustomCookie('login-token', '', null);
+  setCustomCookie('access-token', '', null);
+  return redirect('error/403-forbidden');
 }

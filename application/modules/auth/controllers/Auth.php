@@ -100,6 +100,7 @@ class Auth extends MX_Controller
       destroySession(['user', 'isLogin']);
       setSession(['user' => $result->data->user, 'isLogin' => true]);
       setCustomCookie($result->data->token->name, $result->data->token->value, $result->data->token->expired_at);
+      setCustomCookie($result->data->accessToken->name, $result->data->accessToken->value, $result->data->accessToken->expired_at);
     }
 
     echo json_encode($result);

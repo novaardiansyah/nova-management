@@ -36,7 +36,7 @@ $config['authorization_key'] = '94c8f165-73ed-4940-990e-e645e2f4831b';
 $config['encoded_key']       = '649ce3fa-4ac5-4005-9830-53a2b7e0192a';
 
 $config['secret_prefix'] = 'nova_management';
-$config['status_app'] = 'development';
+$config['status_app']    = 'development';
 /*
 |--------------------------------------------------------------------------
 | Index File
@@ -469,7 +469,7 @@ $config['global_xss_filtering'] = FALSE;
 | 'csrf_regenerate' = Regenerate token on every submission
 | 'csrf_exclude_uris' = Array of URIs which ignore CSRF checks
 */
-$config['csrf_protection']   = FALSE;
+$config['csrf_protection']   = TRUE;
 $config['csrf_token_name']   = 'csrf-token';
 $config['csrf_cookie_name']  = 'csrf-cookie';
 $config['csrf_expire']       = 7200;
