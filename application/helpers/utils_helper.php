@@ -307,16 +307,17 @@ function setCustomCookie($name, $value, $expire = null)
   return getCustomCookie($name);
 }
 
-function versionAsset()
+function versionAssets($version = 1)
 {
-  $ci = get_instance();
-  $status_app = $ci->config->item('status_app');
+  $domain = explode(':', $_SERVER['HTTP_HOST'])[0];
 
-  if ($status_app == 'development') {
-    return getTimes('now', 'YmdHis');
+  if ($domain == 'localhost') {
+    return '?v=' . getTimes('now', 'YmdHis');
   }
 
-  return getTimes('now', 'Ymd');
+  if ($version == 2) return '?v=' . getTimes('now', 'YmdH');
+  
+  return '?v=' . getTimes('now', 'Ymd');
 }
 
 function upload_file($params = [])

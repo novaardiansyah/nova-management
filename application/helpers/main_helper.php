@@ -125,11 +125,16 @@ function requestApi($url, $method = 'GET', $data = [])
 {
   $ci = get_instance();
 
+  $accessToken = getCustomCookie('access-token');
+  $accessToken = $accessToken ? create_array($accessToken, ';') : [];
+  $accessToken = isset($accessToken[0]) ? $accessToken[0] : 'invalid-token';
+  
   $user = getSession('user');
   $user = $user ? arrayToObject($user) : [];
 
   $send = [
     'csrf_renewed' => $ci->security->get_csrf_hash(),
+    'limit'        => 5000,
     'log_idUser'   => isset($user->id) ? $user->id : 0,
     'log_idRole'   => isset($user->idRole) ? $user->idRole : 0,
     'log_username' => isset($user->username) ? $user->username : '',
@@ -149,6 +154,11 @@ function requestApi($url, $method = 'GET', $data = [])
     CURLOPT_HTTP_VERSION   => CURL_HTTP_VERSION_1_1,
     CURLOPT_CUSTOMREQUEST  => $method
   ];
+
+  if ($accessToken !== 'invalid-token')
+  {
+    $params[CURLOPT_HTTPHEADER] = ['Authorization: Bearer ' . $accessToken];
+  }
 
   if ($method == 'POST') {
     $params[CURLOPT_POSTFIELDS] = $data;

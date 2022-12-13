@@ -35,17 +35,17 @@ function contactUsList(url = contactUsListUrl)
               <span class="badge ${parseInt(value.isActive) == 1 ? 'bg-success' : 'bg-danger'}">${parseInt(value.isActive) == 1 ? 'Active' : 'Non-Active'}</span>
             </td>
             <td class="align-middle">
-              <button type="button" class="btn btn-primary btn-sm text-nowrap" onclick="return editContactUs('editContactUs', '${value.id}')">
+              <button type="button" class="btn btn-primary btn-sm text-nowrap mb-1" onclick="return editContactUs('editContactUs', '${value.id}')">
                 <i class="bi bi-pencil-square"></i>
                 <span class="d-none d-xl-inline">Edit</span>
               </button>
 
-              <button type="button" class="btn btn-info btn-sm text-nowrap d-none">
+              <button type="button" class="btn btn-info btn-sm text-nowrap d-none mb-1">
                 <i class="bi bi-eye"></i>
                 <span class="d-none d-xl-inline">Detail</span>
               </button>
 
-              <button type="button" class="btn btn-danger btn-sm text-nowrap" onclick="return deleteContactUs('${value.id}')">
+              <button type="button" class="btn btn-danger btn-sm text-nowrap mb-1" onclick="return deleteContactUs('${value.id}')">
                 <i class="bi bi-x-square"></i>
                 <span class="d-none d-xl-inline">Delete</span>
               </button>
