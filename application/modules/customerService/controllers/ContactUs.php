@@ -9,7 +9,7 @@ class ContactUs extends MX_Controller
   {
     parent::__construct();
     $this->_modelPath = 'M_ContactUs';
-    $this->_corePath = 'M_Core';
+    $this->load->model('M_ContactUs', 'contactUs');
   }
 
   public function index()
@@ -27,12 +27,12 @@ class ContactUs extends MX_Controller
 
       'style' => [
         base_url('assets/mazer/assets/extensions/simple-datatables/style.css'),
-        base_url('assets/css/main.css?v=' . versionAsset())
+        base_url('assets/css/main.css')
       ],
       'script' => [
         base_url('assets/mazer/assets/extensions/simple-datatables/umd/simple-datatables.js'),
-        base_url('assets/js/main.js?v=' . versionAsset()),
-        base_url('assets/js/customerService/contactUs.js?v=' . versionAsset())
+        base_url('assets/js/main.js' . versionAssets()),
+        base_url('assets/js/customerService/contactUs.js' . versionAssets())
       ]
     ];
 
@@ -41,7 +41,7 @@ class ContactUs extends MX_Controller
 
   public function contactUsList()
   {
-    $result = requestApi(api_url('CustomerService/contactUsList'), 'POST');
+    $result = $this->contactUs->contactUsList();
     echo json_encode($result);
   }
 

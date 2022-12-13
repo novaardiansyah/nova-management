@@ -39,10 +39,13 @@ function isAlreadyLogin()
   return isLogin(['redirect' => 'main', 'checkAlreadyLogin' => true]);
 }
 
-function invalidLogin()
+function invalidLogin($redirect = 403)
 {
   destroySession(['user', 'isLogin']);
   setCustomCookie('login-token', '', null);
   setCustomCookie('access-token', '', null);
-  return redirect('error/403-forbidden');
+  
+  if ($redirect == 403) return redirect('error/403-forbidden');
+
+  return redirect($redirect);
 }

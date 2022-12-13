@@ -20,7 +20,7 @@
           <p class="fs-5 text-gray-600">
             You do not have access to view this page, maybe you are not logged in or you do not have access rights to view this page.
           </p>
-          <a href="<?= base_url(); ?>" class="btn btn-lg btn-outline-primary mt-3">Go Home</a>
+          <a href="<?= base_url('auth'); ?>" class="btn btn-lg btn-outline-primary mt-3">Go Home</a>
         </div>
       </div>
     </div>
