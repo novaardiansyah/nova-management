@@ -168,7 +168,7 @@ function requestApi($url, $method = 'GET', $data = [])
 
   $response = curl_exec($curl);
   $response = json_decode($response, FALSE);
-  
+
   curl_close($curl);
 
   return $response;

@@ -6,7 +6,7 @@ class Auth extends MX_Controller
   public function __construct()
   {
     parent::__construct();
-    $this->load->model('M_Auth', 'auth');
+    // $this->load->model('M_Auth', 'auth');
   }
 
   public function index()
@@ -14,18 +14,17 @@ class Auth extends MX_Controller
     $this->load->helper('auth_helper');
     isAlreadyLogin();
 
-    $csrf_renewed = $this->security->get_csrf_hash();
-    $mainLogo     = $this->auth->getMainLogo(['csrf_renewed' => $csrf_renewed]);
-
+    $mainLogo = requestApi(api_url('auth/getMainLogo'), 'POST');
+    
     $data = [
-      'mainLogo' => $mainLogo['status'] ? $mainLogo['data'] : [],
+      'mainLogo' => $mainLogo->status ? $mainLogo->data : [],
 
       'style' => [
         base_url('assets/css/main.css')
       ],
       'script' => [
         base_url('assets/js/main.js'),
-        base_url('assets/js/auth/login.js')
+        base_url('assets/js/auth/login.js' . versionAssets())
       ]
     ];
 
@@ -93,8 +92,7 @@ class Auth extends MX_Controller
     ];
 
     $result = requestApi(api_url('auth/login'), 'POST', $send);
-    $result = arrayToObject($result);
-
+    echo json_encode($result); exit;
     if ($result->status == true)
     {
       destroySession(['user', 'isLogin']);
