@@ -11,9 +11,9 @@ function login()
   
   response.then((callback) => {
     let data = callback.data;
-    console.log('callback:', callback);
-
+    
     startup.crlf_token = data.csrf_renewed;
+    return console.log('callback:', callback);
 
     if (callback.status == true && callback.message !== undefined)
     {
