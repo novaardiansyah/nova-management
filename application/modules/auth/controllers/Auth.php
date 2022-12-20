@@ -11,14 +11,7 @@ class Auth extends MX_Controller
 
   public function index()
   {
-    $this->load->helper('auth_helper');
-    isAlreadyLogin();
-
-    $mainLogo = requestApi(api_url('auth/getMainLogo'), 'POST');
-    
     $data = [
-      'mainLogo' => $mainLogo->status ? $mainLogo->data : [],
-
       'style' => [
         base_url('assets/css/main.css')
       ],
@@ -29,6 +22,44 @@ class Auth extends MX_Controller
     ];
 
     $this->_loadLayout('auth/login', $data);
+  }
+
+  public function validateLogin()
+  {
+    $csrf_renewed = $this->security->get_csrf_hash();
+    $validate     = $this->_r_validateLogin();
+
+    if ($validate->run() == false)
+    {
+      echo json_encode(['status' => false, 'message' => 'Validation is invalid.', 'data' => ['csrf_renewed' => $csrf_renewed, 'errors' => $validate->error_array()]]); exit;
+    }
+
+    $send = [
+      'username' => trim(isset($_POST['username']) ? $_POST['username'] : ''),
+      'password' => trim(isset($_POST['password']) ? $_POST['password'] : '')
+    ];
+
+    $result = requestApi('auth/login', 'POST', $send);
+    
+    if ($result->status == true)
+    {
+      destroySession(['user', 'isLogin']);
+      setSession(['user' => $result->data->user, 'isLogin' => true]);
+      setCustomCookie($result->data->token->name, $result->data->token->value, $result->data->token->expired_at);
+      setCustomCookie($result->data->accessToken->name, $result->data->accessToken->value, $result->data->accessToken->expired_at);
+    }
+
+    echo json_encode($result);
+  }
+
+  private function _r_validateLogin()
+  {
+    $rules = [
+      ['field' => 'username', 'label' => 'Username', 'rules' => 'required|trim|max_length[120]'],
+      ['field' => 'password', 'label' => 'Password', 'rules' => 'required|trim|min_length[6]|max_length[120]']
+    ];
+
+    return $this->form_validation->set_rules($rules);
   }
 
   public function register()
@@ -74,44 +105,6 @@ class Auth extends MX_Controller
     ];
 
     $this->_loadLayout('auth/forgotPassword', $data);
-  }
-
-  public function validateLogin()
-  {
-    $csrf_renewed = $this->security->get_csrf_hash();
-    $validate     = $this->_r_validateLogin();
-
-    if ($validate->run() == false)
-    {
-      echo json_encode(['status' => false, 'message' => 'Validation is invalid.', 'data' => ['csrf_renewed' => $csrf_renewed, 'errors' => $validate->error_array()]]); exit;
-    }
-
-    $send = [
-      'username' => trim(isset($_POST['username']) ? $_POST['username'] : ''),
-      'password' => trim(isset($_POST['password']) ? $_POST['password'] : '')
-    ];
-
-    $result = requestApi(api_url('auth/login'), 'POST', $send);
-    echo json_encode($result); exit;
-    if ($result->status == true)
-    {
-      destroySession(['user', 'isLogin']);
-      setSession(['user' => $result->data->user, 'isLogin' => true]);
-      setCustomCookie($result->data->token->name, $result->data->token->value, $result->data->token->expired_at);
-      setCustomCookie($result->data->accessToken->name, $result->data->accessToken->value, $result->data->accessToken->expired_at);
-    }
-
-    echo json_encode($result);
-  }
-
-  private function _r_validateLogin()
-  {
-    $rules = [
-      ['field' => 'username', 'label' => 'Username', 'rules' => 'required|trim|max_length[120]'],
-      ['field' => 'password', 'label' => 'Password', 'rules' => 'required|trim|min_length[6]|max_length[120]']
-    ];
-
-    return $this->form_validation->set_rules($rules);
   }
 
   public function validateRegister()
