@@ -1,6 +1,8 @@
 <?php 
 defined('BASEPATH') OR exit('No direct script access allowed');
 
+use Dotenv\Dotenv;
+
 function backend_layout($content, $data = [])
 {
   $ci = get_instance();
@@ -124,6 +126,11 @@ function api_url($path = '')
 function requestApi($url, $method = 'GET', $data = [])
 {
   $ci = get_instance();
+  
+  $dotenv = Dotenv::createImmutable(dirname(__FILE__, 3));
+  $dotenv->load();
+
+  $url = $_ENV['API_URL'] . $url;
 
   $accessToken = getCustomCookie('access-token');
   $accessToken = $accessToken ? create_array($accessToken, ';') : [];
@@ -152,7 +159,7 @@ function requestApi($url, $method = 'GET', $data = [])
     CURLOPT_TIMEOUT        => 0,
     CURLOPT_FOLLOWLOCATION => true,
     CURLOPT_HTTP_VERSION   => CURL_HTTP_VERSION_1_1,
-    CURLOPT_CUSTOMREQUEST  => $method
+    CURLOPT_CUSTOMREQUEST  => $method,
   ];
 
   if ($accessToken !== 'invalid-token')
@@ -161,7 +168,8 @@ function requestApi($url, $method = 'GET', $data = [])
   }
 
   if ($method == 'POST') {
-    $params[CURLOPT_POSTFIELDS] = $data;
+    $params[CURLOPT_HTTPHEADER] = ['Content-Type: application/json'];
+    $params[CURLOPT_POSTFIELDS] = json_encode($data);
   }
 
   curl_setopt_array($curl, $params);
