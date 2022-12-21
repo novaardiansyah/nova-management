@@ -13,10 +13,10 @@ class Auth extends MX_Controller
   {
     $data = [
       'style' => [
-        base_url('assets/css/main.css')
+        base_url('assets/css/main.css' . versionAssets())
       ],
       'script' => [
-        base_url('assets/js/main.js'),
+        base_url('assets/js/main.js' . versionAssets()),
         base_url('assets/js/auth/login.js' . versionAssets())
       ]
     ];
@@ -45,8 +45,7 @@ class Auth extends MX_Controller
     {
       destroySession(['user', 'isLogin']);
       setSession(['user' => $result->data->user, 'isLogin' => true]);
-      setCustomCookie($result->data->token->name, $result->data->token->value, $result->data->token->expired_at);
-      setCustomCookie($result->data->accessToken->name, $result->data->accessToken->value, $result->data->accessToken->expired_at);
+      setCustomCookie($result->data->token->name, $result->data->token->value, $result->data->token->expiredAt);
     }
 
     echo json_encode($result);
@@ -65,24 +64,59 @@ class Auth extends MX_Controller
   public function register()
   {
     $this->load->helper('auth_helper');
-    isAlreadyLogin();
-
-    $csrf_renewed = $this->security->get_csrf_hash();
-    $mainLogo     = $this->auth->getMainLogo(['csrf_renewed' => $csrf_renewed]);
+    // isAlreadyLogin();
 
     $data = [
-      'mainLogo' => $mainLogo['status'] ? $mainLogo['data'] : [],
-
       'style' => [
         base_url('assets/css/main.css')
       ],
       'script' => [
-        base_url('assets/js/main.js'),
-        base_url('assets/js/auth/register.js')
+        base_url('assets/js/main.js' . versionAssets()),
+        base_url('assets/js/auth/register.js' . versionAssets())
       ]
     ];
 
     $this->_loadLayout('auth/register', $data);
+  }
+
+  public function validateRegister()
+  {
+    $csrf_renewed = $this->security->get_csrf_hash();
+    $validate     = $this->_r_validateRegister();
+
+    if ($validate->run() == false)
+    {
+      echo json_encode(['status' => false, 'message' => 'Validation is invalid.', 'data' => ['csrf_renewed' => $csrf_renewed, 'errors' => $validate->error_array()]]); exit;
+    }
+
+    $send = [
+      'email'    => trim(isset($_POST['email']) ? $_POST['email'] : ''),
+      'username' => trim(isset($_POST['username']) ? $_POST['username'] : ''),
+      'password' => trim(isset($_POST['password']) ? $_POST['password'] : '')
+    ];
+
+    $result = requestApi('auth/register', 'POST', $send);
+    
+    if ($result->status == true)
+    {
+      destroySession(['user', 'isLogin']);
+      setSession(['user' => $result->data->user, 'isLogin' => true]);
+      setCustomCookie($result->data->token->name, $result->data->token->value, $result->data->token->expiredAt);
+    }
+
+    echo json_encode($result);
+  }
+
+  private function _r_validateRegister()
+  {
+    $rules = [
+      ['field' => 'email', 'label' => 'Email', 'rules' => 'required|trim|max_length[120]'],
+      ['field' => 'username', 'label' => 'Username', 'rules' => 'required|trim|max_length[120]'],
+      ['field' => 'password', 'label' => 'Password', 'rules' => 'required|trim|min_length[6]|max_length[120]'],
+      ['field' => 'confirmPassword', 'label' => 'Confirm Password', 'rules' => 'required|trim|min_length[6]|max_length[120]'],
+    ];
+
+    return $this->form_validation->set_rules($rules);
   }
 
   public function forgotPassword()
@@ -107,48 +141,6 @@ class Auth extends MX_Controller
     $this->_loadLayout('auth/forgotPassword', $data);
   }
 
-  public function validateRegister()
-  {
-    $csrf_renewed = $this->security->get_csrf_hash();
-    $validate     = $this->_r_validateRegister();
-
-    if ($validate->run() == false)
-    {
-      echo json_encode(['status' => false, 'message' => 'Validation is invalid.', 'data' => ['csrf_renewed' => $csrf_renewed, 'errors' => $validate->error_array()]]); exit;
-    }
-
-    $send = [
-      'csrf_renewed'    => $csrf_renewed,
-      'email'           => trim(isset($_POST['email']) ? $_POST['email'] : ''),
-      'username'        => trim(isset($_POST['username']) ? $_POST['username'] : ''),
-      '_password'       => trim(isset($_POST['password']) ? $_POST['password'] : ''),
-      'confirmPassword' => trim(isset($_POST['confirmPassword']) ? $_POST['confirmPassword'] : ''),
-    ];
-
-    $result = $this->auth->validateRegister($send);
-    $result = arrayToObject($result);
-
-    if ($result->status == true)
-    {
-      destroySession(['user', 'isLogin']);
-      setSession(['user' => $result->data->user, 'isLogin' => true]);
-    }
-
-    echo json_encode($result);
-  }
-
-  private function _r_validateRegister()
-  {
-    $rules = [
-      ['field' => 'email', 'label' => 'Email', 'rules' => 'required|trim|max_length[120]'],
-      ['field' => 'username', 'label' => 'Username', 'rules' => 'required|trim|max_length[120]'],
-      ['field' => 'password', 'label' => 'Password', 'rules' => 'required|trim|min_length[6]|max_length[120]'],
-      ['field' => 'confirmPassword', 'label' => 'Confirm Password', 'rules' => 'required|trim|min_length[6]|max_length[120]'],
-    ];
-
-    return $this->form_validation->set_rules($rules);
-  }
-
   public function logout()
   {
     $this->load->helper('auth_helper');
@@ -157,8 +149,8 @@ class Auth extends MX_Controller
 
   private function _loadLayout($path, $data)
   {
-    $this->load->view('auth/layout/header');
-    $this->load->view($path, $data);
+    $this->load->view('auth/layout/header', $data);
+    $this->load->view($path);
     $this->load->view('auth/layout/footer');
   }
 }

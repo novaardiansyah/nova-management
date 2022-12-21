@@ -11,23 +11,15 @@ function register()
   
   response.then((callback) => {
     let data = callback.data;
-    console.log('callback:', callback);
 
     startup.crlf_token = data.csrf_renewed;
 
     if (callback.status == true && callback.message !== undefined)
     {
-      Toastify({
-        text: stripHtml(callback.message),
-        duration: 3000,
-        close: true,
-        style: {
-          background: startup.colors.info,
-        }
-      }).showToast();
-      let next = base_url('main');
+      toastifyAlert({ message: callback.message, color: 'info', timer: 3, close: false });
 
-      return RedirectTo(next, {afterTimeout: 3000});
+      let next = base_url('main');
+      return RedirectTo(next, {afterTimeout: 3});
     }
 
     if (callback.status == false && data.errors !== undefined)
@@ -45,20 +37,9 @@ function register()
       return false;
     }
 
-    if (callback.status == false && callback.message !== undefined)
-    {
-      Toastify({
-        text: stripHtml(callback.message),
-        duration: 5000,
-        close: true,
-        style: {
-          background: startup.colors.danger,
-        }
-      }).showToast();
-
-      return false;
-    }
+    if (callback.status == false && callback.message !== undefined) return toastifyAlert({ message: callback.message, color: 'danger', timer: 5, close: false });
     
-    return false;
+    console.log('debug-callback:', callback);
+    return toastifyAlert({ message: 'Something went wrong!', color: 'danger', timer: 5, close: false });
   });
 }

@@ -1,3 +1,9 @@
+document.addEventListener('DOMContentLoaded', function() {
+  setTimeout(() => {
+    loaderPage('hide');
+  }, 500);
+});
+
 let autohideInvalid = document.querySelectorAll('.autohide-invalid');
 [...autohideInvalid].forEach((element) => {
   element.addEventListener('focus', function(e) {
@@ -113,6 +119,10 @@ function stripHtml(html) {
 function ReloadPage(params = {}) {
   if (params.after !== undefined) 
   {
+    if (params.after < 1000) {
+      params.after = params.after * 1000;
+    }
+
     setTimeout(() => {
       location.reload();
     }, params.after);
@@ -126,6 +136,10 @@ function ReloadPage(params = {}) {
 function RedirectTo(url, params = {}) {
   if (params.afterTimeout !== undefined) 
   {
+    if (params.afterTimeout < 1000) {
+      params.afterTimeout = params.afterTimeout * 1000;
+    }
+
     setTimeout(() => {
       window.location.href = url;
     }, params.afterTimeout);
@@ -329,5 +343,16 @@ function onlyNumber(event)
     return true;
   } else {
     return false;
+  }
+}
+
+function loaderPage(trigger = 'show')
+{
+  const loaderPage = document.querySelector('.loader-page');
+  
+  if (trigger == 'show') {
+    loaderPage.classList.remove('d-none');
+  } else {
+    loaderPage.classList.add('d-none');
   }
 }
