@@ -127,14 +127,14 @@ function requestApi($url, $method = 'GET', $data = [])
 {
   $ci = get_instance();
   
-  $dotenv = Dotenv::createImmutable(dirname(__FILE__, 3));
+  $dotenv = Dotenv::create(dirname(__FILE__, 3), '.env');
   $dotenv->load();
 
   $url = $_ENV['API_URL'] . $url;
 
-  $accessToken = getCustomCookie('access-token');
-  $accessToken = $accessToken ? create_array($accessToken, ';') : [];
-  $accessToken = isset($accessToken[0]) ? $accessToken[0] : 'invalid-token';
+  // $accessToken = getCustomCookie('access-token');
+  // $accessToken = $accessToken ? create_array($accessToken, ';') : [];
+  // $accessToken = isset($accessToken[0]) ? $accessToken[0] : 'invalid-token';
   
   $user = getSession('user');
   $user = $user ? arrayToObject($user) : [];
@@ -162,10 +162,10 @@ function requestApi($url, $method = 'GET', $data = [])
     CURLOPT_CUSTOMREQUEST  => $method,
   ];
 
-  if ($accessToken !== 'invalid-token')
-  {
-    $params[CURLOPT_HTTPHEADER] = ['Authorization: Bearer ' . $accessToken];
-  }
+  // if ($accessToken !== 'invalid-token')
+  // {
+  //   $params[CURLOPT_HTTPHEADER] = ['Authorization: Bearer ' . $accessToken];
+  // }
 
   if ($method == 'POST') {
     $params[CURLOPT_HTTPHEADER] = ['Content-Type: application/json'];

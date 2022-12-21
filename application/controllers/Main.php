@@ -10,8 +10,8 @@ class Main extends MX_Controller
 
   public function index()
   {
-    $this->load->helper('auth_helper');
-    isLogin();
+    // $this->load->helper('auth_helper');
+    // isLogin();
 
     $data = [
       'title'    => 'Dashboard',
@@ -21,11 +21,11 @@ class Main extends MX_Controller
       ],
       'style' => [
         base_url('assets/mazer/assets/extensions/simple-datatables/style.css'),
-        base_url('assets/css/main.css')
+        base_url('assets/css/main.css' . versionAssets())
       ],
       'script' => [
         base_url('assets/mazer/assets/extensions/simple-datatables/umd/simple-datatables.js'),
-        base_url('assets/js/main.js'),
+        base_url('assets/js/main.js' . versionAssets())
       ]
     ];
 
