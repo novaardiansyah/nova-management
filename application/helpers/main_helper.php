@@ -6,16 +6,24 @@ use Dotenv\Dotenv;
 function backend_layout($content, $data = [])
 {
   $ci = get_instance();
-  $ci->load->model('M_Main', 'main');
 
-  $csrf_renewed = $ci->security->get_csrf_hash();
+  $user = getSession('user');
+  
+  $roleAccess = requestApi('roleAccess/get', 'POST', ['roleId' => $user->roleId]);
+  $menu = []; $submenu = [];
 
-  $menu     = $ci->main->getMenu();
-  $mainLogo = $ci->main->getMainLogo(['csrf_renewed' => $csrf_renewed]);
+  if ($roleAccess->status == true)
+  {
+    $menuIds = $roleAccess->data->roleAccess->menu;
+    $menu    = requestApi('menu/getAllowAccessMenu', 'POST', ['ids' => $menuIds]);
+
+    $submenuIds = $roleAccess->data->roleAccess->submenu;
+    $submenu    = requestApi('submenu/getAllowAccessSubmenu', 'POST', ['ids' => $submenuIds]);
+  }
 
   $send = [
-    'menu'     => $menu['status'] ? $menu['data'] : [],
-    'mainLogo' => $mainLogo['status'] ? $mainLogo['data'] : [],
+    'menu'    => $menu,
+    'submenu' => $submenu,
   ];
   
   $data = array_merge($data, $send);
@@ -123,11 +131,11 @@ function api_url($path = '')
   return $url . '/' . $path;
 }
 
-function requestApi($url, $method = 'GET', $data = [])
+function requestApi($url, $method = 'GET', $data = [], $type = 'request')
 {
   $ci = get_instance();
   
-  $dotenv = Dotenv::create(dirname(__FILE__, 3), '.env');
+  $dotenv = Dotenv::createImmutable(dirname(__FILE__, 3), '.env');
   $dotenv->load();
 
   $url = $_ENV['API_URL'] . $url;
@@ -149,6 +157,8 @@ function requestApi($url, $method = 'GET', $data = [])
   ];
   $data = array_merge($data, $send);
   
+  if ($type === 'v1') return ['status' => false, 'data' => $data, 'url' => $url, 'method' => $method];
+
   $curl = curl_init();
 
   $params = [
