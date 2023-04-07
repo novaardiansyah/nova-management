@@ -1,0 +1,6 @@
+/.vscode/*
+*.env
+composer.lock
+/vendor/*
+/application/logs/*
+assets/images/captcha/
