@@ -66,10 +66,9 @@ function request($array = [], $key = '', $default = '', $action = '')
 
   $array = (array) $array;
   $result = isset($array[$key]) ? $array[$key] : $default;
-
-  if ($action === 'escape_str') $result = $ci->db->escape_str($result);
-  if ($action === 'hash_pass') $result = hash_pass($result);
-  if ($action === 'textUppercase') $result = textUppercase($result);
+  
+  if ($result !== $default && $action === 'hash_pass') $result = hash_pass($result);
+  if ($result !== $default && $action === 'textUppercase') $result = textUppercase($result);
 
   return $result;
 }
@@ -78,7 +77,7 @@ function request_api($url = '', $method = 'GET', $data = [], $headers = [])
 {
   $ci = get_instance();
   
-  $url  = $ci->config->item('api_url') . $url;
+  $url  = $ci->config->item('api_url') . '/' . $url;
   $data = ['data' => $data];
 
   $curl = curl_init();

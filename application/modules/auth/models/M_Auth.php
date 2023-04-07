@@ -10,6 +10,6 @@ class M_Auth extends CI_Model
   
   public function attempt_login($data = [])
   {
-    return request_api('Auth/login', 'POST', $data);
+    return request_api('v1/Auth/login', 'POST', $data);
   }
 }
