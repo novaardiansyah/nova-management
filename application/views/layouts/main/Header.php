@@ -12,4 +12,10 @@
   <?php $this->load->view('layouts/main/Style') ?>
 </head>
   <body class="hold-transition sidebar-mini layout-fixed">
+    <div id="loader">
+      <div class="loader-animation">
+        <img src="<?= assets('images/loading/loading-1.gif') ?>" alt="loading-1" />
+      </div>
+    </div>
+
     <div class="wrapper">

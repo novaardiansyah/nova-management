@@ -41,52 +41,31 @@ function attempt_login(event = null)
     data.append('captcha[captcha_time]', captcha.captcha_time)
   }
 
-  data.append(config.csrf_token_name, config.csrf_hash)
-
-  $.ajax({
+  request_ajax({
     url: url,
-    type: 'POST',
     data: data,
-    dataType: 'json',
-    processData: false,
-    contentType: false,
-    beforeSend: function() {
+    withFormValidation: true,
+    form: form,
+    beforeSend: () => {
       form.find('.invalid-feedback').html('').fadeOut('slow')
       form.find('.is-invalid').removeClass('is-invalid')
     },
-    success: function(response) {
-      config.csrf_hash = response.csrf
-      
+    success: (response) => {
+      console.log(response)
+
       if (response.status == false) {
-        if (response.errors != undefined) {
-          Object.keys(response.errors).forEach(function(key) {
-            let input = form.find(`[name="${key}"]`)
-            input.addClass('is-invalid')
+        if (response.errors != undefined && response.errors.user_captcha != undefined) {
+          captcha.count_attempt += 1
+          localStorage.setItem('captcha', JSON.stringify(captcha))
 
-            if (input.next().hasClass('input-group-append')) {
-              input.next().after(`<div class="invalid-feedback ${key}">${response.errors[key]}</div>`)
-            } else {
-              input.after(`<div class="invalid-feedback ${key}">${response.errors[key]}</div>`)
-            }
-
-            form.find(`.invalid-feedback.${key}`)
-          })
-
-          if (response.errors.user_captcha != undefined) {
-            captcha.count_attempt += 1
-            localStorage.setItem('captcha', JSON.stringify(captcha))
-  
-            if (captcha.count_attempt >= 3) generate_captcha()
-            return false
-          }
-
-          return false
+          if (captcha.count_attempt >= 3) generate_captcha()
         }
 
-
-        alerts({ type: 'error', text: response.message, close: () => form.find('input[name="password"]').val(''), timer: 3000 })
+        if (response.message != undefined) {
+          return alerts({ type: 'error', text: response.message, close: () => form.find('input[name="password"]').val(''), timer: 3000 })
+        }
       }
-
+  
       if (response.status == true) {
         alerts({ type: 'success', text: response.message, close: () => redirect(response.redirect), timer: 3000 })
       }

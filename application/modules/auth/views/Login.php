@@ -21,9 +21,17 @@
   <link rel="stylesheet" href="<?= adminlte('dist/css/adminlte.min.css') ?>">
   <!-- Google Font: Source Sans Pro -->
   <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
+  <!-- Main Style -->
+  <link rel="stylesheet" href="<?= assets('css/main.css') ?>" />
 </head>
 
 <body class="hold-transition login-page">
+  <div id="loader">
+    <div class="loader-animation">
+      <img src="<?= assets('images/loading/loading-1.gif') ?>" alt="loading-1" />
+    </div>
+  </div>
+
   <div class="login-box">
     <div class="card">
       <div class="card-body login-card-body">

@@ -7,3 +7,24 @@ input.prevent-scroll::-webkit-inner-spin-button {
   -o-appearance: textfield;
   appearance: textfield;
 }
+
+#loader {
+  display: block;
+}
+
+#loader .loader-animation {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, .60);
+  z-index: 9999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#loader .loader-animation img {
+  width: 120px;
+}
