@@ -265,3 +265,22 @@ function textLowercase($string = '')
   $string = strtolower($string);
   return $string;
 }
+
+function access_restric($user_id = null)
+{
+  $ci = get_instance();
+  
+  if ($user_id == null) $user_id = request($_POST['data'] ?? [], 'user_id', null);
+  if ($user_id == null) return ['status' => false, 'message' => 'Unauthorized, user has not been logged in'];
+  
+  $api_key = $ci->input->get_request_header('x-api-key', true);
+  if ($api_key == null) return ['status' => false, 'message' => 'Unauthorized, token not defined'];
+
+  $token = $ci->db->query("SELECT a.id, a.uid, a.user_id, a.type_id, a.token, a.is_active, a.expired_at FROM users_tokens AS a WHERE a.is_deleted = 0 AND a.is_active = 1 AND a.type_id = 2 AND a.expired_at >= CURRENT_TIMESTAMP AND a.user_id = ? AND a.token = ?", [1, $api_key])->row();
+  if ($token == null) return ['status' => false, 'message' => 'Unauthorized, token is not valid or has expired'];
+
+  $token->id = $token->uid;
+  unset($token->uid);
+
+  return ['status' => true, 'message' => 'Authorized', 'data' => $token];
+}
