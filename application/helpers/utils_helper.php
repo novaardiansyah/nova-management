@@ -79,6 +79,7 @@ function request_api($url = '', $method = 'GET', $data = [], $headers = [])
   
   $url  = $ci->config->item('api_url') . '/' . $url;
   $data = ['data' => $data];
+  $user = get_session('user') ? (Object) get_session('user') : (Object) [];
 
   $curl = curl_init();
 
@@ -102,8 +103,8 @@ function request_api($url = '', $method = 'GET', $data = [], $headers = [])
     curl_setopt($curl, CURLOPT_POSTFIELDS, http_build_query($data));
   }
 
-  if ($headers) {
-    curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
+  if (isset($user->api_key)) {
+    $headers = array_merge($headers, ['x-api-key: ' . $user->api_key]);
   }
 
   curl_setopt_array($curl, array(
@@ -114,6 +115,7 @@ function request_api($url = '', $method = 'GET', $data = [], $headers = [])
     CURLOPT_TIMEOUT        => 0,
     CURLOPT_FOLLOWLOCATION => true,
     CURLOPT_HTTP_VERSION   => CURL_HTTP_VERSION_1_1,
+    CURLOPT_HTTPHEADER     => $headers
   ));
 
 
@@ -127,28 +129,25 @@ function request_api($url = '', $method = 'GET', $data = [], $headers = [])
   return $result;
 }
 
-function response_api($status = 400, $message, $data = [], $etag = null, $params = [])
+function response_api($status = 400, $message, $data = [], $params = [])
 {
+  $ci = get_instance();
+  $etag = $ci->input->get_request_header('etag', true);
+
   $new_etag = md5($status . $message . json_encode($data));
-  if ($etag === $new_etag) {
-    $status = 304;
-  }
+  if ($etag === $new_etag) $status = 304;
   $etag = $new_etag;
 
   $status_code = $status;
 
-  if ($status_code == 400 || $status_code == 401 || $status_code == 403 || $status_code == 404 || $status_code == 405 || $status_code == 500) {
-    $status = false;
-  }
+  if ($status_code == 400 || $status_code == 401 || $status_code == 403 || $status_code == 404 || $status_code == 405 || $status_code == 500) $status = false;
   
-  if ($status_code == 200 || $status_code == 201 || $status_code == 204) {
-    $status = true;
-  }
+  if ($status_code == 200 || $status_code == 201 || $status_code == 204) $status = true;
 
   $response = [
     'status'      => $status,
     'status_code' => $status_code,
-    'message'     => $message,
+    'message'     => $status_code == 304 ? $message . ' (Not Modified)' : $message,
     'data'        => $status_code == 304 ? [] : $data,
     'etag'        => $etag
   ];
