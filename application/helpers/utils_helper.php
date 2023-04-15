@@ -1,5 +1,6 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
+use Ramsey\Uuid\Uuid;
 
 function getTimestamp($date = 'now', $format = 'Y-m-d H:i:s')
 {
@@ -131,7 +132,14 @@ function request_api($url = '', $method = 'GET', $data = [], $headers = [])
 
 function response_api($status = 400, $message, $data = [], $params = [])
 {
-  $ci = get_instance();
+  $ci   = get_instance();
+
+  $debug_key = $ci->input->get_request_header('x-debug-key', true);
+  $is_debug = false;
+
+  $debug_mode = $ci->db->query("SELECT a.id, a.uid, a.token, a.is_active, a.type_id, a.user_id, a.expired_at FROM users_tokens AS a WHERE a.is_deleted = 0 AND a.is_active = 1 AND a.type_id = 3 AND a.expired_at >= CURRENT_TIMESTAMP AND a.token = '$debug_key'")->row();
+  if (!empty($debug_mode)) $is_debug = true;
+
   $etag = $ci->input->get_request_header('etag', true);
 
   $new_etag = md5($status . $message . json_encode($data));
@@ -143,7 +151,7 @@ function response_api($status = 400, $message, $data = [], $params = [])
   if ($status_code == 400 || $status_code == 401 || $status_code == 403 || $status_code == 404 || $status_code == 405 || $status_code == 500) $status = false;
   
   if ($status_code == 200 || $status_code == 201 || $status_code == 204) $status = true;
-
+ 
   $response = [
     'status'      => $status,
     'status_code' => $status_code,
@@ -151,6 +159,8 @@ function response_api($status = 400, $message, $data = [], $params = [])
     'data'        => $status_code == 304 ? [] : $data,
     'etag'        => $etag
   ];
+
+  if ($is_debug == false) unset($params['lastq']);
 
   $response = array_merge($response, $params);
   return $response;
@@ -275,11 +285,24 @@ function access_restric($user_id = null)
   $api_key = $ci->input->get_request_header('x-api-key', true);
   if ($api_key == null) return ['status' => false, 'message' => 'Unauthorized, token not defined'];
 
-  $token = $ci->db->query("SELECT a.id, a.uid, a.user_id, a.type_id, a.token, a.is_active, a.expired_at FROM users_tokens AS a WHERE a.is_deleted = 0 AND a.is_active = 1 AND a.type_id = 2 AND a.expired_at >= CURRENT_TIMESTAMP AND a.user_id = ? AND a.token = ?", [1, $api_key])->row();
+  $user = $ci->db->query("SELECT a.id, a.uid, a.username, a.email, a.fullname, a.phone, a.role_id FROM users AS a WHERE a.is_active = 1 AND a.is_deleted = 0 AND a.uid = '$user_id'")->row();
+
+  if (empty($user)) return ['status' => false, 'message' => 'Unauthorized, user has not valid'];
+
+  $token = $ci->db->query("SELECT a.id, a.uid, a.token, a.is_active, a.type_id, a.user_id, a.expired_at FROM users_tokens AS a WHERE a.is_deleted = 0 AND a.is_active = 1 AND a.type_id = 2 AND a.expired_at >= CURRENT_TIMESTAMP AND a.user_id = '$user->id' AND a.token = '$api_key'")->row();
+
   if ($token == null) return ['status' => false, 'message' => 'Unauthorized, token is not valid or has expired'];
 
   $token->id = $token->uid;
   unset($token->uid);
 
-  return ['status' => true, 'message' => 'Authorized', 'data' => $token];
+  return ['status' => true, 'message' => 'Authorized', 'data' => [
+    'token' => $token,
+    'user'  => $user
+  ]];
+}
+
+function uid()
+{
+  return Uuid::uuid4();
 }
