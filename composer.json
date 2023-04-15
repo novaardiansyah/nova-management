@@ -12,7 +12,9 @@
 	},
 	"require": {
 		"php": ">=5.3.7",
-		"filp/whoops": "^2.4"
+		"filp/whoops": "^2.4",
+		"fakerphp/faker": "^1.21",
+		"ramsey/uuid": "^4.2"
 	},
 	"suggest": {
 		"paragonie/random_compat": "Provides better randomness in PHP 5.x"
