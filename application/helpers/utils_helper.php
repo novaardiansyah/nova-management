@@ -126,7 +126,8 @@ function request_api($url = '', $method = 'GET', $data = [], $headers = [])
   if ($user) {
     $headers = array_merge($headers, [
       'x-api-key: ' . $user->api_key ?? null,
-      'x-debug-key: ' . $user->debug_key ?? null
+      'x-debug-key: ' . $user->debug_key ?? null,
+      'x-refresh-token: ' . get_cookie('token_login') ?? null
     ]);
   }
 
@@ -294,23 +295,60 @@ function textLowercase($string = '')
   return $string;
 }
 
-function access_restric($user_id = null)
+function access_restric()
 {
   $ci = get_instance();
   
-  if ($user_id == null) $user_id = request($_POST['data'] ?? [], 'user_id', null);
-  if ($user_id == null) return ['status' => false, 'message' => 'Unauthorized, user has not been logged in'];
+  $now     = getTimestamp('now', 'Y-m-d H:i:s');
+  $user_id = request($_POST['data'] ?? [], 'user_id', null);
+
+  if ($user_id == null) return response_api(401, 'Unauthorized, user has not been logged in');
   
   $api_key = $ci->input->get_request_header('x-api-key', true);
-  if ($api_key == null) return ['status' => false, 'message' => 'Unauthorized, token not defined'];
+  if ($api_key == null) return response_api(401, 'Unauthorized, token not defined');
 
   $user = $ci->db->query("SELECT a.id, a.uid, a.username, a.email, a.fullname, a.phone, a.role_id FROM users AS a WHERE a.is_active = 1 AND a.is_deleted = 0 AND a.uid = '$user_id'")->row();
 
-  if (empty($user)) return ['status' => false, 'message' => 'Unauthorized, user has not valid'];
+  if (empty($user)) return response_api(401, 'Unauthorized, user has not valid');
 
   $token = $ci->db->query("SELECT a.id, a.uid, a.token, a.is_active, a.type_id, a.user_id, a.expired_at FROM users_tokens AS a WHERE a.is_deleted = 0 AND a.is_active = 1 AND a.type_id = 2 AND a.expired_at >= CURRENT_TIMESTAMP AND a.user_id = '$user->id' AND a.token = '$api_key'")->row();
 
-  if ($token == null) return ['status' => false, 'message' => 'Unauthorized, token is not valid or has expired'];
+  if (empty($token)) {
+    $refresh_token = $ci->input->get_request_header('x-refresh-token', true);
+    $new_api_key = null;
+
+    if ($refresh_token != null) {
+      $check_refresh_token = $ci->db->query("SELECT a.id, a.uid, a.token, a.is_active, a.type_id, a.user_id, a.expired_at FROM users_tokens AS a WHERE a.is_deleted = 0 AND a.is_active = 1 AND a.type_id = 1 AND a.expired_at >= CURRENT_TIMESTAMP AND a.user_id = '$user->id' AND a.token = '$refresh_token'")->row();
+
+      if (!empty($check_refresh_token)) {
+        $check_prev_api_key = $ci->db->query("SELECT a.id, a.uid, a.token, a.is_active, a.type_id, a.user_id, a.expired_at FROM users_tokens AS a WHERE a.is_deleted = 0 AND a.is_active = 1 AND a.type_id = 2 AND a.user_id = '$user->id'")->row();
+
+        $new_api_key = random_token('alnum', 128, 'lower');
+
+        if (!empty($check_prev_api_key)) {
+          $ci->db->update('users_tokens', [
+            'token'      => $new_api_key,
+            'expired_at' => getTimestamp('+1 hours', 'Y-m-d H:i:s'),
+            'updated_at' => $now,
+            'updated_by' => $user->id
+          ], ['id' => $check_prev_api_key->id]);
+        } else {
+          $ci->db->insert('users_tokens', [
+            'uid'        => uid(),
+            'user_id'    => $user->id,
+            'type_id'    => 2,
+            'token'      => $new_api_key,
+            'created_by' => $user->id,
+            'expired_at' => getTimestamp('+1 hours', 'Y-m-d H:i:s')
+          ]);
+        }
+      }
+    }
+
+    if ($new_api_key != null) return response_api(401, 'Unauthorized, token is not valid or has expired', ['new_api_key' => $new_api_key], ['error' => 'token_expired', 'action' => 'refresh_token']);
+
+    return response_api(401, 'Unauthorized, token is not valid or has expired');
+  }
 
   $token->id = $token->uid;
   unset($token->uid);
