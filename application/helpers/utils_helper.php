@@ -77,6 +77,7 @@ function request($array = [], $key = '', $default = '', $action = '')
 function request_api($url = '', $method = 'GET', $data = [], $headers = [])
 {
   $ci = get_instance();
+  $ci->load->library('user_agent');
   
   $url  = $ci->config->item('api_url') . '/' . $url;
   $data = ['data' => $data];
@@ -90,6 +91,24 @@ function request_api($url = '', $method = 'GET', $data = [], $headers = [])
   }
 
   if ($method === 'POST') {
+    if ($user) {
+      $data = array_merge($data['data'], [
+        'user_id'    => $user->id ?? null,
+        'role_id'    => $user->role_id ?? null,
+        'ip_address' => $ci->input->ip_address() ?? null,
+        'user_agent' => $ci->agent->agent_string() ?? null,
+        'browser'    => $ci->agent->browser() ?? null,
+        'version'    => $ci->agent->version() ?? null,
+        'platform'   => $ci->agent->platform() ?? null,
+        'mobile'     => $ci->agent->mobile() ?? null,
+        'robot'      => $ci->agent->robot() ?? null,
+        'referrer'   => $ci->agent->referrer() ?? null,
+        'csrf'       => $ci->security->get_csrf_hash() ?? null
+      ]);
+
+      $data = ['data' => $data];
+    }
+
     curl_setopt($curl, CURLOPT_POST, true);
     curl_setopt($curl, CURLOPT_POSTFIELDS, http_build_query($data));
   }
@@ -104,8 +123,11 @@ function request_api($url = '', $method = 'GET', $data = [], $headers = [])
     curl_setopt($curl, CURLOPT_POSTFIELDS, http_build_query($data));
   }
 
-  if (isset($user->api_key)) {
-    $headers = array_merge($headers, ['x-api-key: ' . $user->api_key]);
+  if ($user) {
+    $headers = array_merge($headers, [
+      'x-api-key: ' . $user->api_key ?? null,
+      'x-debug-key: ' . $user->debug_key ?? null
+    ]);
   }
 
   curl_setopt_array($curl, array(
@@ -119,20 +141,17 @@ function request_api($url = '', $method = 'GET', $data = [], $headers = [])
     CURLOPT_HTTPHEADER     => $headers
   ));
 
-
   $response = curl_exec($curl);
   $error    = curl_error($curl);
   curl_close($curl);
 
-  $result = json_decode($response);
-  $result->csrf = $ci->security->get_csrf_hash();
-
-  return $result;
+  if ($error) return $error;
+  return $response ? json_decode($response) : null;
 }
 
 function response_api($status = 400, $message, $data = [], $params = [])
 {
-  $ci   = get_instance();
+  $ci = get_instance();
 
   $debug_key = $ci->input->get_request_header('x-debug-key', true);
   $is_debug = false;
@@ -147,22 +166,22 @@ function response_api($status = 400, $message, $data = [], $params = [])
   $etag = $new_etag;
 
   $status_code = $status;
+  $status      = false;
 
-  if ($status_code == 400 || $status_code == 401 || $status_code == 403 || $status_code == 404 || $status_code == 405 || $status_code == 500) $status = false;
-  
   if ($status_code == 200 || $status_code == 201 || $status_code == 204) $status = true;
  
   $response = [
     'status'      => $status,
     'status_code' => $status_code,
+    'etag'        => $etag,
+    'csrf'        => request($_POST['data'] ?? [], 'csrf') ?? null,
     'message'     => $status_code == 304 ? $message . ' (Not Modified)' : $message,
-    'data'        => $status_code == 304 ? [] : $data,
-    'etag'        => $etag
+    'data'        => $status_code == 304 ? [] : $data
   ];
-
+  
   if ($is_debug == false) unset($params['lastq']);
-
   $response = array_merge($response, $params);
+
   return $response;
 }
 
